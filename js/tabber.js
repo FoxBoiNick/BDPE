@@ -21,41 +21,41 @@ function openAvr(evt, avrName) {
 
 
 // get HelpModalActivator
-var modalActivator = document.getElementById('HelpModalActivator');
-// apply onclick event listener
-modalActivator.addEventListener('click', function() {
-    // get modal
-    var modal = document.getElementById('HelpModal');
-    var mcontent = document.getElementById('HelpModalContent');
-    // apply active class to modal
-    modal.classList.add('active');
-    // apply active class to modal content
-    mcontent.classList.add('active');
-}
-);
-// get HelpModalCloser
-var modalCloser = document.getElementById('HelpModalCloser');
-// apply onclick event listener
-modalCloser.addEventListener('click', function() {
-    // get modal
-    var modal = document.getElementById('HelpModal');
-    var mcontent = document.getElementById('HelpModalContent');
-    // remove active class from modal content
-    mcontent.classList.remove('active');
-    // remove active class from modal
-    modal.classList.remove('active');
-}
-);
-// get HelpModal
-var modal = document.getElementById('HelpModal');
-// apply onclick event listener
-modal.addEventListener('click', function() {
-    // remove active class from modal
-    modal.classList.remove('active');
-    // get modal content
-    var mcontent = document.getElementById('HelpModalContent');
-    // remove active class from modal content
-    mcontent.classList.remove('active');
+var helpModal = document.getElementById("helpModal");
+var openBtn = document.getElementById("HelpModalActivator");
+var closeBtn = document.getElementById("HelpModalCloser");
+openBtn.onclick = function() {helpModal.style.display = "block";};
+closeBtn.onclick = function() {helpModal.style.display = "none";};
+window.onclick = function(event) {if (event.target == helpModal) {helpModal.style.display = "none";}}; 
 
+// get copyRequestMessage
+var copyRequestMessage = document.getElementById("copyRequestMessageButton");
+
+// apply on click copy
+copyRequestMessage.onclick = function() {
+  // create a new textarea element and give it id='temp_element'
+  var textarea = document.createElement('textarea');
+  textarea.id = 'temp_element';
+  // Optional step to make less noise on the page, if any!
+  textarea.style.opacity = 0;
+  textarea.style.position = 'fixed';
+  // Now append it to helpModal or any other element in your page
+  helpModal.appendChild(textarea);
+  // Give our textarea a value of whatever inside the div of id=containerid
+  textarea.value = document.getElementById('copyRequestMessage').innerText;
+  // Now copy whatever inside the textarea to clipboard
+  var selector = document.querySelector('#temp_element');
+  selector.select();
+  selector.setSelectionRange(0, 99999); /*For mobile devices*/
+
+  navigator.clipboard.writeText(selector.value);
+  // Remove the textarea
+  helpModal.removeChild(textarea);
+
+  // set copyRequestMessage text to copied
+  copyRequestMessage.innerText = "Message Copied!";
+  // revert copyRequestMessage text to copy
+  setTimeout(function(){
+    copyRequestMessage.innerText = "Copy Message";
+  }, 1000);
 }
-);
