@@ -529,7 +529,7 @@ body {
     background-size: cover;
     background-position: right;
     width: 100%;
-    height: 100%;
+    height: 128px;
 }
 @media (max-width: 430px) {
     .banner-shade {
@@ -556,8 +556,8 @@ body {
 }
 
 .profile-img {
-    height: 128px;
-    width: 128px;
+    height: 150px;
+    width: 150px;
 
     /* 50% border on right */
     border-radius: 5px 50% 50% 5px;
