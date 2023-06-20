@@ -23,6 +23,14 @@ var processedData = {
                 "Name": "",
                 "ProductId": "",
                 "Amount": 0,
+            },
+            "categories": {
+                "Unique": 0,
+                "Tour Pass": 0,
+                "Evnt Tkns": 0,
+                "Gem Pack": 0,
+                "Unlmtd Play": 0,
+                "Dx Cards": 0,
             }
         }
     },
@@ -612,6 +620,7 @@ async function processData(files) {
 ).pop();
     temp.Amount = items.filter(x => x === temp.Name).length;
     processedData.iapOverview.PurchaseHist.mostPurchasedItem = temp;
+    processedData.iapOverview.PurchaseHist.categories = categories;
 
     // gameplayOverview.songsUnlocked
     processedData.GameplayOverview.songsUnlocked = profileJson.beatmaps.beatmaps.length;
@@ -658,7 +667,7 @@ async function processData(files) {
     await updateDisplay();
 }
 
-async function updateDisplay() {
+async function updateDisplay(processedData) {
     // update user start date
     let humanReadableDate = new Date(processedData.Profile.startDate);
     document.getElementById("userStartDate").innerHTML = humanReadableDate.toLocaleDateString("en-US");
@@ -830,12 +839,12 @@ async function updateDisplay() {
     document.getElementById("faveProduct").innerHTML = processedData.iapOverview.PurchaseHist.mostPurchasedItem.Name;
 
     let chartValues = [
-        categories["Tour Pass"],
-        categories["Evnt Tkns"],
-        categories["Gem Pack"],
-        categories["Unlmtd Play"],
-        categories["Dx Cards"],
-        categories["Unique"]
+        processedData.iapOverview.PurchaseHist.categories["Tour Pass"],
+        processedData.iapOverview.PurchaseHist.categories["Evnt Tkns"],
+        processedData.iapOverview.PurchaseHist.categories["Gem Pack"],
+        processedData.iapOverview.PurchaseHist.categories["Unlmtd Play"],
+        processedData.iapOverview.PurchaseHist.categories["Dx Cards"],
+        processedData.iapOverview.PurchaseHist.categories["Unique"]
     ]
     let data= {
         labels: [
@@ -1080,6 +1089,109 @@ uploadFile.addEventListener('drop', async function handleFileDrop(evt) {
     handleFile(evt);
 
 }, false);
+
+
+// handle demoPackage
+dempPackage = document.getElementById("demoPackage");
+dempPackage.addEventListener('click', async function handleDemoPackage(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    uploadInfo.innerHTML = "<p style='color:green;'>Loading Awesomeness...</p>";
+
+    // process data
+    let demo = {
+        "Profile": {
+          "startDate": 1632050396533,
+          "userName": "Beatstar#0",
+          "userAvatar": 17,
+          "userBanner": "https://beatbot.beatscore.eu/assets/banner?banner=BB501452963&user_name=_&user_avatar=https://via.placeholder.com/128x128.png&level=20&src=True",
+          "userStars": 2596,
+          "appOpenedTimes": 1818
+        },
+        "friendsOverview": {
+          "userFriends": 7,
+          "userBrags": 44,
+          "recievedBrags": 25
+        },
+        "iapOverview": {
+          "totalSpent": 794.640000000001,
+          "iapTotalPerDay": 1.2435680751173726,
+          "purchaseHistTotal": 83,
+          "PurchaseHist": {
+            "percentOfTotal": 51.365398167723754,
+            "amountOfTotal": 408.1700000000005,
+            "mostPurchasedItem": {
+              "Name": "Event Token Pack",
+              "ProductID": "bundle-event-token-299",
+              "Amount": 65
+            },
+            "categories": {
+              "Unique": 0,
+              "Tour Pass": 12,
+              "Evnt Tkns": 66,
+              "Gem Pack": 0,
+              "Unlmtd Play": 0,
+              "Dx Cards": 7,
+              "Gem Packs": 0,
+            }
+          }
+        },
+        "GameplayOverview": {
+          "songsUnlocked": 520,
+          "mostPlayedSong": {
+            "1": {
+              "Name": "Gangnam Style",
+              "PlayedCount": 256
+            },
+            "2": {
+              "Name": "Sandstorm",
+              "PlayedCount": 175
+            }
+          },
+          "Averages": {
+            "gameAverage": {
+              "Normal": {
+                "Standard": 49922.49230769231,
+                "Deluxe": 49898
+              },
+              "Hard": {
+                "Standard": 74641.70833333333,
+                "Deluxe": 74751.71052631579
+              },
+              "Extreme": {
+                "Standard": 99013,
+                "Deluxe": 96766.95238095238
+              }
+            },
+            "TruAvr": {
+              "Normal": {
+                "Standard": 43092.18805518075,
+                "Deluxe": 47771.25
+              },
+              "Hard": {
+                "Standard": 62489.98418196045,
+                "Deluxe": 52806.97656059615
+              },
+              "Extreme": {
+                "Standard": 50229.49412671801,
+                "Deluxe": 51706.92960631376
+              }
+            }
+          },
+          "Medals": {
+            "g": 1,
+            "p": 22,
+            "d": 387,
+            "dp": 108,
+            "nm": 2
+          }
+        }
+      };
+    await updateDisplay(demo);
+}, false);
+
+
 
 // find all img elements
 var imgs = document.getElementsByTagName('img');

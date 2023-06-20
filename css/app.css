@@ -116,6 +116,33 @@ body {
 .footer a:hover {
     color: #e46161;
 }
+.demo {
+    color: #b63838;
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 50px;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+.demo:hover {
+    color: #e46161;
+}
+.demo-link {
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+
+    font-family: "Roboto", sans-serif;
+}
+.demo-link p {
+    margin: 0;
+    padding: 0;
+}
 .footer .heart {
     /* use emoticon instead of ascii */
     color: #e46161;
@@ -739,6 +766,16 @@ body {
     padding: 2px 16px;
     color: white;
     font-family: "Roboto", sans-serif;
+}
+.modal-warn {
+    background-color: rgba(240, 110, 4, 0.3);
+    border: 2px solid rgba(240, 110, 4, 0.5);
+    color: white;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    width: calc(100% - 36px);
+    height: fit-content;
 }
 .modal-body pre {
     background-color: rgba(0, 0, 0, 0.3);
