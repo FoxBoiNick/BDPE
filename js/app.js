@@ -664,7 +664,7 @@ async function processData(files) {
     // print data
     console.log(processedData);
     // update display
-    await updateDisplay();
+    await updateDisplay(processedData);
 }
 
 async function updateDisplay(processedData) {
