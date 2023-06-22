@@ -1,91 +1,4 @@
-var processedData = {
-    "Profile": {
-        "startDate": "",
-        "userName": "",
-        "userAvatar": "",
-        "userBanner": "",
-        "userStars": 0,
-        "appOpenedTimes": 0,
-    },
-    "friendsOverview": {
-        "userFriends": 0,
-        "userBrags": 0,
-        "recievedBrags": 0,
-    },
-    "iapOverview": {
-        "totalSpent": 0,
-        "iapTotalPerDay": 0,
-        "purchaseHistTotal": 0,
-        "PurchaseHist": {
-            "percentOfTotal": 0,
-            "amountOfTotal": 0,
-            "mostPurchasedItem": {
-                "Name": "",
-                "ProductId": "",
-                "Amount": 0,
-            },
-            "categories": {
-                "Unique": 0,
-                "Tour Pass": 0,
-                "Evnt Tkns": 0,
-                "Gem Pack": 0,
-                "Unlmtd Play": 0,
-                "Dx Cards": 0,
-            }
-        }
-    },
-    "GameplayOverview": {
-        "songsUnlocked": 0,
-        "mostPlayedSong": {
-            "1": {
-                "Name": "",
-                "PlayedCount": 0,
-            },
-            "2": {
-                "Name": "",
-                "PlayedCount": 0,
-            }
-        },
-        "Averages": {
-            "gameAverage": {
-                "Normal": {
-                    "Standard": 0,
-                    "Deluxe": 0,
-                },
-                "Hard": {
-                    "Standard": 0,
-                    "Deluxe": 0,
-                },
-                "Extreme": {
-                    "Standard": 0,
-                    "Deluxe": 0,
-                },
-            },
-            "TruAvr": {
-                "Normal": {
-                    "Standard": 0,
-                    "Deluxe": 0,
-                },
-                "Hard": {
-                    "Standard": 0,
-                    "Deluxe": 0,
-                },
-                "Extreme": {
-                    "Standard": 0,
-                    "Deluxe": 0,
-                },
-            }
-        },
-        "Medals": {
-            "g": 0,
-            "p": 0,
-            "d": 0,
-            "dp": 0,
-            "nm": 0,
-        }
-    },
-}
-
+var songData = {};
 var products = {
     // Common Products
     "bundle-tourpass[0-9]+-premium": {
@@ -191,495 +104,681 @@ var products = {
 
 }
 
-async function processData(files) {
+async function processData(rawData) {
     
-    const getFile = (name) => files.find((file) => file.name === name);
+    ViewData = {};
+    ViewData.RawConfig = {};
+    ViewData.ProfileMap = {};
+    ViewData.RewardSources = {};
 
-    const readFile = async (name) => {
-        return new Promise((resolve) => {
-            const file = getFile(name);
-            if (!file) {
-                resolve(null);
+    ViewData.Output = {};
+
+
+    function GetConfig(Name)
+    {
+        return rawData[Name] ? rawData[Name] : null;
+    }
+
+    function ParsePaymentHistory(payments)
+    {
+        var Map = [];
+
+        payments.forEach(function(payment){
+            if(payment.receiptKey)
+            {
+                var Temp = {
+                    Dates : {
+                        Claimed : payment.claimedAt?new Date(payment.claimedAt):null,
+                        Updated : payment.updatedAt?new Date(payment.updatedAt):null,
+                    },
+                    Prices : {
+                        USD: payment.purchase.usdTierPrice,
+                        Local: parseFloat(payment.purchase.localPrice),
+                        Currency: payment.purchase.currencyCode
+                    },
+                    Name: payment.purchase.productId,
+                    Source: payment.purchase.trafficSource
+                };
+                Map.push(Temp);
             }
-            const fileContents = [];
-            const decoder = new fflate.DecodeUTF8();
-            file.ondata = (err, data, final) => {
-                decoder.push(data, final);
-            }
-            decoder.ondata = (str, final) => {
-                fileContents.push(str);
-                if (final) {
-                    resolve(fileContents.join(''));
-                }
-            };
-            file.start();
+
         });
-    };
-
-
-    // load profile.json
-    const profileJson = JSON.parse(await readFile('profile.json'));
-    const friendsJson = JSON.parse(await readFile('friends.json'));
-    const paymentStatsJson = JSON.parse(await readFile('payment_stats.json'));
-    const paymentHistoryJson = JSON.parse(await readFile('payment_history.json'));
-
-    // calculate Averages.gameAverage
-    const deluxeSongs = {
-        "Normal": [],
-        "Hard": [],
-        "Extreme": [],
+        
+        return Map;
     }
-    const standardSongs = {
-        "Normal": [],
-        "Hard": [],
-        "Extreme": [],
-    }
-    medalThresholds = {
-        "Standard": {
-            "Normal": {
-                "No Medal": 0,
-                "Gold": 48500,
-                "Platinum": 49000,
-                "Diamond": 49500,
-                "Diamond Perfect": 50000,
-            },
-            "Hard": {
-                "No Medal": 0,
-                "Gold": 72750,
-                "Platinum": 73500,
-                "Diamond": 74250,
-                "Diamond Perfect": 75000,
-            },
-            "Extreme": {
-                "No Medal": 0,
-                "Gold": 97000,
-                "Platinum": 98000,
-                "Diamond": 99000,
-                "Diamond Perfect": 100000,
-            }
-        },
-        "Deluxe": {
-            "Normal": {
-                "No Medal": 0,
-                "Gold": 48900,
-                "Platinum": 49300,
-                "Diamond": 49750,
-                "Diamond Perfect": 50000,
-            },
-            "Hard": {
-                "No Medal": 0,
-                "Gold": 73350,
-                "Platinum": 73950,
-                "Diamond": 74625,
-                "Diamond Perfect": 75000,
-            },
-            "Extreme": {
-                "No Medal": 0,
-                "Gold": 97800,
-                "Platinum": 98600,
-                "Diamond": 99500,
-                "Diamond Perfect": 100000,
+
+    function ParseProfile(profile)
+    {
+        var Response = {};
+
+
+        Response.BasicInfo = {
+            Banner : profile.playerVisuals.callingCard.templateId,
+            ProfileIconId: profile.basicInfo.profileIconId,
+            FacebookId: profile.basicInfo.facebookAppScopedId,
+            FacebookImage: profile.basicInfo.saCustomImageKey,
+        }
+
+        Response.Songs = {
+            AvailableSongs : profile.beatmaps.beatmaps.map(function(x){ return ParseSongData(x)}),
+            RemovedSongs : profile.beatmaps.removedBeatmaps.map(function(x){ return ParseSongData(x)}),
+            Stats : {
+                Started: profile.beatmaps.totalStartedCount,
+                Finished: profile.beatmaps.totalPlayedCount
             }
         }
-    }
 
-
-    for (song of profileJson.beatmaps.beatmaps) {
-        songInfo = songData[song.templateId];
-        if (songInfo === undefined) {
-            console.log("Song not found in BDPE: " + song.templateId);
-            continue;
+        Response.Cases = {
+            Total: profile.cases.numCasesOpened
         }
-        if (songInfo.Difficulty === "Normal") {
-            if (songInfo.Type === "Standard") {
-                standardSongs.Normal.push(song);
-                
-                // SET MEDAL
-                if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Diamond Perfect"]) {
-                    processedData.GameplayOverview.Medals.dp++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Diamond"]) {
-                    processedData.GameplayOverview.Medals.d++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Platinum"]) {
-                    processedData.GameplayOverview.Medals.p++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Gold"]) {
-                    processedData.GameplayOverview.Medals.g++;
-                }
-                else {
-                    processedData.GameplayOverview.Medals.nm++;
-                }
+        
+        Response.Currencies = {
+            Stars: 0,
+            Vinyls: 0,
+            Gems: 0,
+            TourPoints: 0,
+            EventTokens: 0
+        }
 
-            } else if (songInfo.Type === "Deluxe") {
-                deluxeSongs.Normal.push(song);
-
-                // SET MEDAL
-                if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Normal["Diamond Perfect"]) {
-                    processedData.GameplayOverview.Medals.dp++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Normal["Diamond"]) {
-                    processedData.GameplayOverview.Medals.d++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Normal["Platinum"]) {
-                    processedData.GameplayOverview.Medals.p++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Normal["Gold"]) {
-                    processedData.GameplayOverview.Medals.g++;
-                }
-                else {
-                    processedData.GameplayOverview.Medals.nm++;
-                }
-
+        profile.currencies.forEach(function(currency) {
+            switch(currency.currencyId)
+            {
+                case 3:
+                    Response.Currencies.Gems = currency.amount;
+                    break;
+                case 5:
+                    Response.Currencies.Vinlys = currency.amount;
+                    break;
+                case 7:
+                    Response.Currencies.Stars = currency.amount;
+                    break;
+                case 8:
+                    Response.Currencies.TourPoints = currency.amount;
+                    break;
+                case 9:
+                    Response.Currencies.EventTokens = currency.amount;
+                    break;
             }
-        } else if (songInfo.Difficulty === "Hard") {
-            if (songInfo.Type === "Standard") {
-                standardSongs.Hard.push(song);
+        });
+        
 
-                // SET MEDAL
-                if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Hard["Diamond Perfect"]) {
-                    processedData.GameplayOverview.Medals.dp++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Hard["Diamond"]) {
-                    processedData.GameplayOverview.Medals.d++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Hard["Platinum"]) {
-                    processedData.GameplayOverview.Medals.p++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Hard["Gold"]) {
-                    processedData.GameplayOverview.Medals.g++;
-                }
-                else {
-                    processedData.GameplayOverview.Medals.nm++;
-                }
+        Response.Banners = profile.callingCards.unlockedCallingCards.map(function(x){ return {BannerId: x.templateId, EliteRank : x.seasonLevel>0?x.seasonLevel:null}});
 
-            } else if (songInfo.Type === "Deluxe") {
-                deluxeSongs.Hard.push(song);
-                
-                // SET MEDAL
-                if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Diamond Perfect"]) {
-                    processedData.GameplayOverview.Medals.dp++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Diamond"]) {
-                    processedData.GameplayOverview.Medals.d++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Platinum"]) {
-                    processedData.GameplayOverview.Medals.p++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Gold"]) {
-                    processedData.GameplayOverview.Medals.g++;
-                }
-                else {
-                    processedData.GameplayOverview.Medals.nm++;
-                }
+        Response.Emojis = profile.emojis.unlockedEmojisId.map(function(x){ return {EmojiId: x}});
+        
+        Response.Brags = profile.friendBrags.Brags.map(function(x){ return ParseBragData(x)});
 
-            }
-        } else if (songInfo.Difficulty === "Extreme") {
-            if (songInfo.Type === "Standard") {
-                standardSongs.Extreme.push(song);
+        Response.LikedSongs = profile.likedBeatmaps.likedBeatmapsId.map(function(x) { return {BeatmapId: x}});
 
-                // SET MEDAL
-                if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Extreme["Diamond Perfect"]) {
-                    processedData.GameplayOverview.Medals.dp++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Extreme["Diamond"]) {
-                    processedData.GameplayOverview.Medals.d++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Extreme["Platinum"]) {
-                    processedData.GameplayOverview.Medals.p++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Extreme["Gold"]) {
-                    processedData.GameplayOverview.Medals.g++;
-                }
-                else {
-                    processedData.GameplayOverview.Medals.nm++;
-                }
-
-            } else if (songInfo.Type === "Deluxe") {
-                deluxeSongs.Extreme.push(song);
-
-                // SET MEDAL
-                if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Extreme["Diamond Perfect"]) {
-                    processedData.GameplayOverview.Medals.dp++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Extreme["Diamond"]) {
-                    processedData.GameplayOverview.Medals.d++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Extreme["Platinum"]) {
-                    processedData.GameplayOverview.Medals.p++;
-                }
-                else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Extreme["Gold"]) {
-                    processedData.GameplayOverview.Medals.g++;
-                }
-                else {
-                    processedData.GameplayOverview.Medals.nm++;
-                }
-
-            }
+        Response.UserName = {
+            Formatted:  `${profile.name}#${profile.nameUid}`,
+            Name : profile.name,
+            Discriminator: profile.nameUid
         }
-    }
 
-    let dataavrs = {
-        "gameAverage": {
-            "Normal": {
-                "Standard": 0,
-                "Deluxe": 0,
-            },
-            "Hard": {
-                "Standard": 0,
-                "Deluxe": 0,
-            },
-            "Extreme": {
-                "Standard": 0,
-                "Deluxe": 0,
-            },
-        },
-        "TruAvr": {
-            "Normal": {
-                "Standard": 0,
-                "Deluxe": 0,
-            },
-            "Hard": {
-                "Standard": 0,
-                "Deluxe": 0,
-            },
-            "Extreme": {
-                "Standard": 0,
-                "Deluxe": 0,
-            },
+        Response.SongCases = {
+            History : profile.recordBoxOpening.previouslyOpenedGachaBoxesId.map(function(x) { return {GachaBoxId: x}}),
+            Next: profile.recordBoxOpening.nextGachaBox.boxId
         }
-    }
 
-    for (song of standardSongs.Normal) {
-        dataavrs.gameAverage.Normal.Standard += song.HighestScore.absoluteScore;
-        dataavrs.TruAvr.Normal.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
-    }
-    dataavrs.gameAverage.Normal.Standard /= standardSongs.Normal.length;
-    dataavrs.TruAvr.Normal.Standard /= standardSongs.Normal.length;
-
-    for (song of standardSongs.Hard) {
-        dataavrs.gameAverage.Hard.Standard += song.HighestScore.absoluteScore;
-        dataavrs.TruAvr.Hard.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
-    }
-    dataavrs.gameAverage.Hard.Standard /= standardSongs.Hard.length;
-    dataavrs.TruAvr.Hard.Standard /= standardSongs.Hard.length;
-
-    for (song of standardSongs.Extreme) {
-        dataavrs.gameAverage.Extreme.Standard += song.HighestScore.absoluteScore;
-        dataavrs.TruAvr.Extreme.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
-    }
-    dataavrs.gameAverage.Extreme.Standard /= standardSongs.Extreme.length;
-    dataavrs.TruAvr.Extreme.Standard /= standardSongs.Extreme.length;
-
-    for (song of deluxeSongs.Normal) {
-        dataavrs.gameAverage.Normal.Deluxe += song.HighestScore.absoluteScore;
-        dataavrs.TruAvr.Normal.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
-    }
-    dataavrs.gameAverage.Normal.Deluxe /= deluxeSongs.Normal.length;
-    dataavrs.TruAvr.Normal.Deluxe /= deluxeSongs.Normal.length;
-
-    for (song of deluxeSongs.Hard) {
-        dataavrs.gameAverage.Hard.Deluxe += song.HighestScore.absoluteScore;
-        dataavrs.TruAvr.Hard.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
-    }
-    dataavrs.gameAverage.Hard.Deluxe /= deluxeSongs.Hard.length;
-    dataavrs.TruAvr.Hard.Deluxe /= deluxeSongs.Hard.length;
-
-    for (song of deluxeSongs.Extreme) {
-        dataavrs.gameAverage.Extreme.Deluxe += song.HighestScore.absoluteScore;
-        dataavrs.TruAvr.Extreme.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
-    }
-    dataavrs.gameAverage.Extreme.Deluxe /= deluxeSongs.Extreme.length;
-    dataavrs.TruAvr.Extreme.Deluxe /= deluxeSongs.Extreme.length;
-
-    processedData.GameplayOverview.Averages = dataavrs;
-
-
-
-    // Profile.startDate
-    processedData.Profile.startDate = profileJson.sharplaData.creationTime;
-
-    // Profile.userName
-    processedData.Profile.userName = profileJson.name + "#" + profileJson.nameUid;
-
-    // Profile.userAvatar
-    processedData.Profile.userAvatar = profileJson.basicInfo.profileIconId;
-
-    // Profile.userBanner
-    processedData.Profile.userBanner = `https://beatbot.beatscore.eu/assets/banner?banner=BB${
-        encodeURI(profileJson.playerVisuals.callingCard.templateId)
-    }&user_name=${
-        encodeURI(profileJson.name)
-    }&user_avatar=${
-        //encodeURI(processedData.Profile.userAvatar)
-        "https://via.placeholder.com/128x128.png"
-    }&level=20&src=True`;
-
-    // Profile.userStars
-    processedData.Profile.userStars = profileJson.currencies.find((currency) => currency.currencyId === 7).amount;
-
-    // friendsOverview.userFriends
-    processedData.friendsOverview.userFriends = friendsJson.length;
-
-    // friendsOverview.userBrags
-    processedData.friendsOverview.userBrags = 0;
-    // loop through beatmaps.beatmaps and add the length of beatmap.BragState.braggedToPlayers
-    for (beatmap of profileJson.beatmaps.beatmaps) {
-        processedData.friendsOverview.userBrags += beatmap.BragState.braggedToPlayers.length;
-    }
-
-    // friendsOverview.recievedBrags
-    processedData.friendsOverview.recievedBrags = profileJson.friendBrags.Brags.length;
-
-    // Profile.appOpenedTimes
-    processedData.Profile.appOpenedTimes = profileJson.sharplaData.sessionCount;
-
-    // iapOverview.totalSpent
-    processedData.iapOverview.totalSpent = paymentStatsJson.iapSpend
-
-    // iapOverview.iapTotalPerDay 
-    let startDate = new Date(processedData.Profile.startDate);
-    let daysPlayed = Math.round((Date.now() - startDate) / (1000 * 60 * 60 * 24));
-    processedData.iapOverview.iapTotalPerDay = paymentStatsJson.iapSpend / daysPlayed;
-
-    // iapOverview.purchaseHistTotal
-    processedData.iapOverview.purchaseHistTotal = 0;
-    for (purchase of paymentHistoryJson) {
-        if ("receiptKey" in purchase) {
-            processedData.iapOverview.purchaseHistTotal++;
+        Response.ApplicationData = {
+            Installed: new Date(profile.sharplaData.creationTime),
+            LastStart: new Date(profile.sharplaData.lastSessionStartTime),
+            StartedCount: profile.sharplaData.sessionCount,
+            Platform: GetPlatform(profile.sharplaData.platform),
+            AppId: profile.sharplaData.appId
         }
+
+        profile.subProfileTOs.forEach(function(to){
+            if(to.LastPurchaseTime)
+                Response.BasicInfo.LastPurchaseDate = new Date(to.LastPurchaseTime);
+        })           
+
+        return Response;
     }
-
-    // iapOverview.PurchaseHist.percentOfTotal
-    // iterate through paymentHistoryJson and add up the total spent
-    let totalSpent = 0;
-    for (purchase of paymentHistoryJson) {
-        if ("receiptKey" in purchase) {
-            totalSpent += purchase.purchase.usdTierPrice;
-        }        
-    }
-
-    processedData.iapOverview.PurchaseHist.percentOfTotal = (totalSpent / processedData.iapOverview.totalSpent) * 100;
-
-    // iapOverview.PurchaseHist.amountOfTotal
-    processedData.iapOverview.PurchaseHist.amountOfTotal = totalSpent;
     
-    // iapOverview.PurchaseHist.mostPurchasedItem
-    let temp = {
-        "Name": "",
-        "ProductID": "",
-        "Amount": 0,
+
+    function GetPlatform(platform)
+    {
+        switch(platform)
+        {
+            case 8: return "iPhone";
+            case 11: return "Android";
+            default: return `Unknown platform [${platform}]`;
+        }
     }
 
-    // print unique productIds
-    let items = [];
-    for (purchase of paymentHistoryJson) {
-        items.push(purchase.purchase.productId);
-    }
-    //console.log([...new Set(items)]);
-
-    // iterate through paymentHistoryJson and find the most purchased item
-    items = [];
-    unreadableitems = [];
-    fallback = [];
-    readable = [];
-    categories = {
-        "Unique": 0,
-        "Tour Pass": 0,
-        "Evnt Tkns": 0,
-        "Gem Pack": 0,
-        "Unlmtd Play": 0,
-        "Dx Cards": 0,
-    }
-    for (purchase of paymentHistoryJson) {
-        let unreadable = purchase.purchase.productId
-        unreadableitems.push(unreadable);
-        let matched = false;
-        for (product in products) {
-            // if the product matches the regex (key) in products
-            if (new RegExp(product).test(unreadable)) {
-                // add the value of the key to items
-                items.push(products[product].Name);
-                // add the value of the key to categories
-                categories[products[product].Category]++;
-                readable.push(unreadable);
-                matched = true;
-                break;
+    function ParseBragData(brag)
+    {
+        var Object = {
+            Hidden: brag.hidden,
+            BeatmapId: 795,
+            UserId: brag.braggerPlayerId,
+            TimeStamps : {
+                Created: new Date(brag.date),
+                Updated: new Date(brag.dateOfLastUpdate)
+            },
+            EmoteId: brag.emoteId,
+            Score: {
+                Normalized: brag.scoreToBeat.normalizedScore,
+                Absolute: brag.scoreToBeat.absoluteScore
             }
         }
-        if (!matched) {
-            items.push(products["fallback"].Name);
-            fallback.push(unreadable);
+
+        return Object;
+    }
+
+    function CalculateBrags(config) {
+        let sentBrags = 0;
+        for (beatmap of config.beatmaps.beatmaps) {
+            sentBrags += beatmap.BragState.braggedToPlayers.length;
         }
+
+        return sentBrags;
+
     }
-    temp.Name = items.sort((a, b) =>
-        items.filter(v => v === a).length - items.filter(v => v === b).length
-).pop();
-    temp.ProductID = unreadableitems.sort((a, b) =>
-        unreadableitems.filter(v => v === a).length - unreadableitems.filter(v => v === b).length
-).pop();
-    temp.Amount = items.filter(x => x === temp.Name).length;
-    processedData.iapOverview.PurchaseHist.mostPurchasedItem = temp;
-    processedData.iapOverview.PurchaseHist.categories = categories;
 
-    // gameplayOverview.songsUnlocked
-    processedData.GameplayOverview.songsUnlocked = profileJson.beatmaps.beatmaps.length;
-
-    // gameplayOverview.mostPlayedSong.1 and 2
-    let mostPlayedSong = {
-        "1": {
-            "Name": "",
-            "PlayedCount": 0,
-        },
-        "2": {
-            "Name": "",
-            "PlayedCount": 0,
+    function ParseSongData(song)
+    {
+        if(ViewData.RewardSources[song.RewardedSource])
+        {
+            ViewData.RewardSources[song.RewardedSource]++;
         }
-    }
-    // iterate through beatmaps.beatmaps and find the most played song using  "PlayedCount" as a filter
-    filter = profileJson.beatmaps.beatmaps.filter(beatmap => beatmap.PlayedCount > 0);
-    if (songData[filter.sort((a, b) => b.PlayedCount - a.PlayedCount)[0].templateId]) {
-        // if the song is found, add it to mostPlayedSong
-        mostPlayedSong[1].Name = songData[filter.sort((a, b) => b.PlayedCount - a.PlayedCount)[0].templateId].Name;
-        mostPlayedSong[1].PlayedCount = filter.sort((a, b) => b.PlayedCount - a.PlayedCount)[0].PlayedCount;
-    } else {
-        // if the song is not found, add the templateId to mostPlayedSong
-        mostPlayedSong[1].Name = beatmap.templateId;
-        mostPlayedSong[1].PlayedCount = filter.sort((a, b) => b.PlayedCount - a.PlayedCount)[0].PlayedCount;
-    }
-    // repeat for mostPlayedSong[2]
-    if (songData[filter.sort((a, b) => b.PlayedCount - a.PlayedCount)[1].templateId]) {
-        // if the song is found, add it to mostPlayedSong
-        mostPlayedSong[2].Name = songData[filter.sort((a, b) => b.PlayedCount - a.PlayedCount)[1].templateId].Name;
-        mostPlayedSong[2].PlayedCount = filter.sort((a, b) => b.PlayedCount - a.PlayedCount)[1].PlayedCount;
-    } else {
-        // if the song is not found, add the templateId to mostPlayedSong
-        mostPlayedSong[2].Name = beatmap.templateId;
-        mostPlayedSong[2].PlayedCount = filter.sort((a, b) => b.PlayedCount - a.PlayedCount)[1].PlayedCount;
-    }
-    // convert templateId to readable name using songData
+        else
+        {
+            ViewData.RewardSources[song.RewardedSource] = 1;
+        }
 
-    processedData.GameplayOverview.mostPlayedSong = mostPlayedSong;
+        var Object = {
+            Score: {
+                HighestScore : {
+                    Normalized : song.HighestScore.normalizedScore,
+                    Absolute : song.HighestScore.absoluteScore,
+                },
+                Total : {
+                    Normalized : song.NormalizedLifetimeScore,
+                    Absolute : song.AbsoluteLifetimeScore,
+                },
+                HighestStreak: song.HighestStreak,
+                MaxGrade: song.HighestGradeId,
+                MaxCheckpoint: song.HighestCheckpoint,
+            },
+            Counters : {
+                Played : song.PlayedCount,
+                Unfinished : song.UnfinishedPlayCount,
+                Bragged : song.BragState.braggedToPlayers.length
+            },
+            Version: song.Version,
+            BeatmapId: song.templateId,
+            
+            PlayCount : song.PlayedCount,
+            Source: song.RewardedSource,
+        };
 
-    // print data
-    console.log(processedData);
-    // update display
-    await updateDisplay(processedData);
+    return Object;
+
+    }
+
+    function GetMostPurchasedItem(paymentHistoryJson) {
+        temp = {};
+        items = [];
+        unreadableitems = [];
+        fallback = [];
+        readable = [];
+        categories = {
+            "Unique": 0,
+            "Tour Pass": 0,
+            "Evnt Tkns": 0,
+            "Gem Packs": 0,
+            "Unlmtd Play": 0,
+            "Dx Cards": 0,
+        };
+        for (purchase of paymentHistoryJson) {
+            let unreadable = purchase.purchase.productId
+            unreadableitems.push(unreadable);
+            let matched = false;
+            for (product in products) {
+                // if the product matches the regex (key) in products
+                if (new RegExp(product).test(unreadable)) {
+                    // add the value of the key to items
+                    items.push(products[product].Name);
+                    // add the value of the key to categories
+                    categories[products[product].Category]++;
+                    readable.push(unreadable);
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                items.push(products["fallback"].Name);
+                fallback.push(unreadable);
+            }
+        }
+        temp.Name = items.sort((a, b) =>
+            items.filter(v => v === a).length - items.filter(v => v === b).length
+        ).pop();
+        temp.ProductID = unreadableitems.sort((a, b) =>
+            unreadableitems.filter(v => v === a).length - unreadableitems.filter(v => v === b).length
+        ).pop();
+        temp.Amount = items.filter(x => x === temp.Name).length;
+        
+        return [{
+            Name: temp.Name,
+            ProductID: temp.ProductID,
+            Amount: temp.Amount,
+        }, categories];
+    }
+
+    function CalculateSongAveragesAndMedals(profileJson) {
+
+        let medalData = {
+            "dp": 0,
+            "d": 0,
+            "p": 0,
+            "g": 0,
+            "nm": 0,
+        }
+
+        // calculate Averages.gameAverage
+        const deluxeSongs = {
+            "Normal": [],
+            "Hard": [],
+            "Extreme": [],
+        }
+        const standardSongs = {
+            "Normal": [],
+            "Hard": [],
+            "Extreme": [],
+        }
+        medalThresholds = {
+            "Standard": {
+                "Normal": {
+                    "No Medal": 0,
+                    "Gold": 48500,
+                    "Platinum": 49000,
+                    "Diamond": 49500,
+                    "Diamond Perfect": 50000,
+                },
+                "Hard": {
+                    "No Medal": 0,
+                    "Gold": 72750,
+                    "Platinum": 73500,
+                    "Diamond": 74250,
+                    "Diamond Perfect": 75000,
+                },
+                "Extreme": {
+                    "No Medal": 0,
+                    "Gold": 97000,
+                    "Platinum": 98000,
+                    "Diamond": 99000,
+                    "Diamond Perfect": 100000,
+                }
+            },
+            "Deluxe": {
+                "Normal": {
+                    "No Medal": 0,
+                    "Gold": 48900,
+                    "Platinum": 49300,
+                    "Diamond": 49750,
+                    "Diamond Perfect": 50000,
+                },
+                "Hard": {
+                    "No Medal": 0,
+                    "Gold": 73350,
+                    "Platinum": 73950,
+                    "Diamond": 74625,
+                    "Diamond Perfect": 75000,
+                },
+                "Extreme": {
+                    "No Medal": 0,
+                    "Gold": 97800,
+                    "Platinum": 98600,
+                    "Diamond": 99500,
+                    "Diamond Perfect": 100000,
+                }
+            }
+        }
+
+
+        for (song of profileJson.beatmaps.beatmaps) {
+            songInfo = songData[song.templateId];
+            if (songInfo === undefined) {
+                console.log("Song not found in BDPE: " + song.templateId);
+                continue;
+            }
+            if (songInfo.Difficulty === "Normal") {
+                if (songInfo.Type === "Standard") {
+                    standardSongs.Normal.push(song);
+                    
+                    // SET MEDAL
+                    if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Diamond Perfect"]) {
+                        medalData.dp++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Diamond"]) {
+                        medalData.d++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Platinum"]) {
+                        medalData.p++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Gold"]) {
+                        medalData.g++;
+                    }
+                    else {
+                        medalData.nm++;
+                    }
+
+                } else if (songInfo.Type === "Deluxe") {
+                    deluxeSongs.Normal.push(song);
+
+                    // SET MEDAL
+                    if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Normal["Diamond Perfect"]) {
+                        medalData.dp++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Normal["Diamond"]) {
+                        medalData.d++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Normal["Platinum"]) {
+                        medalData.p++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Normal["Gold"]) {
+                        medalData.g++;
+                    }
+                    else {
+                        medalData.nm++;
+                    }
+
+                }
+            } else if (songInfo.Difficulty === "Hard") {
+                if (songInfo.Type === "Standard") {
+                    standardSongs.Hard.push(song);
+
+                    // SET MEDAL
+                    if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Hard["Diamond Perfect"]) {
+                        medalData.dp++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Hard["Diamond"]) {
+                        medalData.d++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Hard["Platinum"]) {
+                        medalData.p++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Hard["Gold"]) {
+                        medalData.g++;
+                    }
+                    else {
+                        medalData.nm++;
+                    }
+
+                } else if (songInfo.Type === "Deluxe") {
+                    deluxeSongs.Hard.push(song);
+                    
+                    // SET MEDAL
+                    if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Diamond Perfect"]) {
+                        medalData.dp++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Diamond"]) {
+                        medalData.d++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Platinum"]) {
+                        medalData.p++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Gold"]) {
+                        medalData.g++;
+                    }
+                    else {
+                        medalData.nm++;
+                    }
+
+                }
+            } else if (songInfo.Difficulty === "Extreme") {
+                if (songInfo.Type === "Standard") {
+                    standardSongs.Extreme.push(song);
+
+                    // SET MEDAL
+                    if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Extreme["Diamond Perfect"]) {
+                        medalData.dp++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Extreme["Diamond"]) {
+                        medalData.d++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Extreme["Platinum"]) {
+                        medalData.p++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Extreme["Gold"]) {
+                        medalData.g++;
+                    }
+                    else {
+                        medalData.nm++;
+                    }
+
+                } else if (songInfo.Type === "Deluxe") {
+                    deluxeSongs.Extreme.push(song);
+
+                    // SET MEDAL
+                    if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Extreme["Diamond Perfect"]) {
+                        medalData.dp++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Extreme["Diamond"]) {
+                        medalData.d++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Extreme["Platinum"]) {
+                        medalData.p++;
+                    }
+                    else if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Extreme["Gold"]) {
+                        medalData.g++;
+                    }
+                    else {
+                        medalData.nm++;
+                    }
+
+                }
+            }
+        }
+
+        let dataavrs = {
+            "gameAverage": {
+                "Normal": {
+                    "Standard": 0,
+                    "Deluxe": 0,
+                },
+                "Hard": {
+                    "Standard": 0,
+                    "Deluxe": 0,
+                },
+                "Extreme": {
+                    "Standard": 0,
+                    "Deluxe": 0,
+                },
+            },
+            "TruAvr": {
+                "Normal": {
+                    "Standard": 0,
+                    "Deluxe": 0,
+                },
+                "Hard": {
+                    "Standard": 0,
+                    "Deluxe": 0,
+                },
+                "Extreme": {
+                    "Standard": 0,
+                    "Deluxe": 0,
+                },
+            }
+        }
+    
+        for (song of standardSongs.Normal) {
+            dataavrs.gameAverage.Normal.Standard += song.HighestScore.absoluteScore;
+            dataavrs.TruAvr.Normal.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
+        }
+        dataavrs.gameAverage.Normal.Standard /= standardSongs.Normal.length;
+        dataavrs.TruAvr.Normal.Standard /= standardSongs.Normal.length;
+    
+        for (song of standardSongs.Hard) {
+            dataavrs.gameAverage.Hard.Standard += song.HighestScore.absoluteScore;
+            dataavrs.TruAvr.Hard.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
+        }
+        dataavrs.gameAverage.Hard.Standard /= standardSongs.Hard.length;
+        dataavrs.TruAvr.Hard.Standard /= standardSongs.Hard.length;
+    
+        for (song of standardSongs.Extreme) {
+            dataavrs.gameAverage.Extreme.Standard += song.HighestScore.absoluteScore;
+            dataavrs.TruAvr.Extreme.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
+        }
+        dataavrs.gameAverage.Extreme.Standard /= standardSongs.Extreme.length;
+        dataavrs.TruAvr.Extreme.Standard /= standardSongs.Extreme.length;
+    
+        for (song of deluxeSongs.Normal) {
+            dataavrs.gameAverage.Normal.Deluxe += song.HighestScore.absoluteScore;
+            dataavrs.TruAvr.Normal.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
+        }
+        dataavrs.gameAverage.Normal.Deluxe /= deluxeSongs.Normal.length;
+        dataavrs.TruAvr.Normal.Deluxe /= deluxeSongs.Normal.length;
+    
+        for (song of deluxeSongs.Hard) {
+            dataavrs.gameAverage.Hard.Deluxe += song.HighestScore.absoluteScore;
+            dataavrs.TruAvr.Hard.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
+        }
+        dataavrs.gameAverage.Hard.Deluxe /= deluxeSongs.Hard.length;
+        dataavrs.TruAvr.Hard.Deluxe /= deluxeSongs.Hard.length;
+    
+        for (song of deluxeSongs.Extreme) {
+            dataavrs.gameAverage.Extreme.Deluxe += song.HighestScore.absoluteScore;
+            dataavrs.TruAvr.Extreme.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
+        }
+        dataavrs.gameAverage.Extreme.Deluxe /= deluxeSongs.Extreme.length;
+        dataavrs.TruAvr.Extreme.Deluxe /= deluxeSongs.Extreme.length;
+
+        return [
+            dataavrs,
+            medalData,
+        ]
+    }
+
+    async function CalculateMostPlayedSongs(profileJson) {
+        // fetch ./data/songs.json using fetch no async
+        let getSongData =
+            new Promise(function(resolve, reject)
+            {
+                fetch(`/data/songs.json`)
+                .then(function(response){
+                    return response.json();
+                })
+                .then((json) => {
+                    resolve(json);
+                }).catch(function(err){
+                    reject(err);
+                })
+            })
+
+        
+        let objectResponse = Promise.all([getSongData])
+        .then(function(SongData){
+            // gameplayOverview.mostPlayedSong.1 and 2
+            let mostPlayedSongs = [];
+            // iterate through beatmaps.beatmaps and find the most played song using  "PlayedCount" as a filter
+            filter = profileJson.beatmaps.beatmaps.filter(beatmap => beatmap.PlayedCount > 0);
+            filter.sort((a, b) => b.PlayedCount - a.PlayedCount).templateId;
+            
+            for (song of filter) {
+                if (songData[song.templateId] != undefined) {
+                    mostPlayedSongs.push({
+                        "Name": songData[song.templateId].Name,
+                        "PlayedCount": song.PlayedCount,
+                        "TemplateId": song.templateId,
+                    })
+                }
+            }
+            return mostPlayedSongs;
+        })
+        .catch(function(err){
+            console.log(err);
+        })
+
+        // syncronous await for the objectResponse
+        return await objectResponse;
+    }
+
+    mostPlayedSongs = await CalculateMostPlayedSongs(GetConfig("profile"));
+    Promise.all([GetConfig("payment_history"), GetConfig("payment_stats"), GetConfig("friends"), GetConfig("user_identity"), GetConfig("profile")])
+    .then(function(configs){
+        ViewData.RawConfig.PaymentHistory = configs[0];
+        ViewData.ProfileMap.PaymentHistory = ParsePaymentHistory(configs[0]);
+
+        ViewData.RawConfig.PaymentStats = configs[1]; 
+
+        ViewData.RawConfig.Friends = configs[2]; 
+
+        ViewData.RawConfig.UserIdentity = configs[3]; 
+
+        ViewData.RawConfig.Profile = configs[4]; 
+
+        ViewData.ProfileMap.PaymentStats = {
+            TotalSpent : Math.round(configs[1].iapSpend * 100 ) / 100
+        }
+        
+        ViewData.ProfileMap.Friends = ViewData.RawConfig.Friends;
+
+        ViewData.ProfileMap.UserIdentity = {
+            SuperCellId : ViewData.RawConfig.UserIdentity.supercellID,
+            PendingDeletion : ViewData.RawConfig.UserIdentity.pendingDeletion,
+        }
+        
+        ViewData.ProfileMap.Profile = ParseProfile(configs[4]); 
+
+        ViewData.Output.PaymentHistory = {
+            TotalSpent: Math.round(ViewData.ProfileMap.PaymentHistory.map(x => x.Prices.USD).reduce((a,b) => a + b, 0) * 100) / 100,
+            TotalSpentLocal: Math.round(ViewData.ProfileMap.PaymentHistory.map(x => x.Prices.Local).reduce((a,b) => a + b, 0) * 100) / 100,
+            Currency: ViewData.ProfileMap.PaymentHistory[0].Prices.Currency,
+            Count: ViewData.ProfileMap.PaymentHistory.length,
+            MostPurchasedItem: GetMostPurchasedItem(configs[0])[0],
+            Categories: GetMostPurchasedItem(configs[0])[1],
+        }
+
+
+        ViewData.Output.PaymentStats = ViewData.ProfileMap.PaymentStats;
+
+        ViewData.Output.User = {
+            Friends : {
+                Friends: ViewData.ProfileMap.Friends,
+                Count: ViewData.ProfileMap.Friends.length
+            },
+            SuperCellId : ViewData.ProfileMap.UserIdentity.SuperCellId,
+            PendingDeletion : ViewData.ProfileMap.UserIdentity.PendingDeletion,
+            Profile : ViewData.ProfileMap.Profile,
+            Brags : {
+                Sent: CalculateBrags(configs[4]),
+                Received: ViewData.ProfileMap.Profile.Brags.length
+            }
+        }
+
+        ViewData.Output.Songs = {
+            Count:ViewData.ProfileMap.Profile.Songs.AvailableSongs.length,
+            Averages: CalculateSongAveragesAndMedals(configs[4])[0],
+            Medals: CalculateSongAveragesAndMedals(configs[4])[1],
+            MostPlayed: mostPlayedSongs,
+        } //Finish this           
+        
+        //console.log(ViewData);
+        // update display
+        updateDisplay(ViewData);
+    });
+    
 }
 
-async function updateDisplay(processedData) {
+async function updateDisplay(ViewData) {
+    console.log(ViewData);
     // update user start date
-    let humanReadableDate = new Date(processedData.Profile.startDate);
+    let humanReadableDate = new Date(ViewData.ProfileMap.Profile.ApplicationData.Installed);
     document.getElementById("userStartDate").innerHTML = humanReadableDate.toLocaleDateString("en-US");
     document.getElementById("userStartDateComment").innerHTML = Math.floor((Date.now() - humanReadableDate) / 31536000000) + " years ago" + " (" + humanReadableDate.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) + ")";
     // update user name
-    document.getElementById("userName").innerHTML = processedData.Profile.userName;
+    document.getElementById("userName").innerHTML = ViewData.ProfileMap.Profile.UserName.Formatted;
     // update user avatar
-    document.getElementById("userAvatar").src = "./img/profiles/" + processedData.Profile.userAvatar + ".jpg";
+    document.getElementById("userAvatar").src = "./img/profiles/" + ViewData.ProfileMap.Profile.BasicInfo.ProfileIconId + ".jpg";
     // update user banner
-    document.getElementById("userBanner").style.backgroundImage = `url(${processedData.Profile.userBanner})`;
+    document.getElementById("userBanner").style.backgroundImage = `url(https://beatbot.beatscore.eu/assets/banner?banner=BB${ViewData.ProfileMap.Profile.BasicInfo.Banner}&user_name=_&user_avatar=https://via.placeholder.com/128x128.png&level=20&src=True`
     // update user stars
-    document.getElementById("userStars").innerHTML = processedData.Profile.userStars;
+    document.getElementById("userStars").innerHTML = ViewData.ProfileMap.Profile.Currencies.Stars;
 
     // update user friends
     let friendscomments = {
@@ -698,13 +797,13 @@ async function updateDisplay(processedData) {
     comment = ""
     // get the highest key that is lower or equal to the user's friends
     for (const key in friendscomments) {
-        if (processedData.friendsOverview.userFriends >= key) {
+        if (ViewData.ProfileMap.Friends.length >= key) {
             if (key in (friendscomments)) {
                 comment = friendscomments[key];
             }
         }
     }
-    document.getElementById("userFriends").innerHTML = processedData.friendsOverview.userFriends;
+    document.getElementById("userFriends").innerHTML = ViewData.ProfileMap.Friends.length;
     document.getElementById("userFriendsComment").innerHTML = comment;
 
     // update user brags
@@ -724,13 +823,13 @@ async function updateDisplay(processedData) {
     comment = ""
     // get the highest key that is lower or equal to the user's brags
     for (const key in bragsComments) {
-        if (processedData.friendsOverview.userBrags >= key) {
+        if (ViewData.Output.User.Brags.Sent >= key) {
             if (key in (bragsComments)) {
                 comment = bragsComments[key];
             }
         }
     }
-    document.getElementById("userBrags").innerHTML = processedData.friendsOverview.userBrags;
+    document.getElementById("userBrags").innerHTML = ViewData.Output.User.Brags.Sent;
     document.getElementById("userBragsComment").innerHTML = comment;
 
     // update user recieved brags
@@ -750,18 +849,18 @@ async function updateDisplay(processedData) {
     comment = ""
     // get the highest key that is lower or equal to the user's recieved brags
     for (const key in recievedBragsComments) {
-        if (processedData.friendsOverview.recievedBrags >= key) {
+        if (ViewData.Output.User.Brags.Received >= key) {
             if (key in (recievedBragsComments)) {
                 comment = recievedBragsComments[key];
             }
         }
     }
-    document.getElementById("recievedBrags").innerHTML = processedData.friendsOverview.recievedBrags;
+    document.getElementById("recievedBrags").innerHTML = ViewData.Output.User.Brags.Received;
     document.getElementById("recievedBragsComment").innerHTML = comment;
 
     // update user app opened times
-    document.getElementById("appOpenedTimes").innerHTML = processedData.Profile.appOpenedTimes;
-    let timesADay = processedData.Profile.appOpenedTimes / ((Date.now() - processedData.Profile.startDate) / 86400000);
+    document.getElementById("appOpenedTimes").innerHTML = ViewData.ProfileMap.Profile.ApplicationData.StartedCount;
+    let timesADay = ViewData.ProfileMap.Profile.ApplicationData.StartedCount / ((Date.now() - ViewData.ProfileMap.Profile.ApplicationData.Installed) / 86400000);
     // if timesADay is exact number or decimal is below 0.2
     if (timesADay % 1 == 0 || timesADay % 1 < 0.2) {
         document.getElementById("appOpenedTimesComment").innerHTML = "That's " + Math.round(timesADay) + " times a day!";
@@ -788,14 +887,14 @@ async function updateDisplay(processedData) {
     comment = ""
     // get the highest key that is lower or equal to the user's iap total
     for (const key in iapTotalComments) {
-        if (processedData.iapOverview.totalSpent >= key) {
+        if (ViewData.Output.PaymentStats.TotalSpent >= key) {
             if (key in (iapTotalComments)) {
                 comment = iapTotalComments[key];
             }
         }
     }
     // round to 2 decimal places
-    document.getElementById("iapTotal").innerHTML = "$" + processedData.iapOverview.totalSpent.toFixed(2) + " USD";
+    document.getElementById("iapTotal").innerHTML = "$" + ViewData.Output.PaymentStats.TotalSpent + " USD";
     document.getElementById("iapTotalComment").innerHTML = comment;
 
     // iap daily average
@@ -815,11 +914,13 @@ async function updateDisplay(processedData) {
         "1000": "an air Hockey Table",
     }
 
-    document.getElementById("iapDailyAverage").innerHTML = "$" + processedData.iapOverview.iapTotalPerDay.toFixed(2) + " USD";
+    let installedDate = new Date(ViewData.ProfileMap.Profile.ApplicationData.Installed);
+    let TotalPerDay = (ViewData.Output.PaymentStats.TotalSpent / ((Date.now() - installedDate) / 86400000)).toFixed(2);
+    document.getElementById("iapDailyAverage").innerHTML = "$" + TotalPerDay + " USD";
     comment = ""
     // get the highest key that is lower or equal to the user's iap daily average
     for (const key in iapDailyAverageComments) {
-        if (processedData.iapOverview.iapTotalPerDay >= key) {
+        if (TotalPerDay >= key) {
             if (key in (iapDailyAverageComments)) {
                 comment = iapDailyAverageComments[key];
             }
@@ -829,28 +930,29 @@ async function updateDisplay(processedData) {
 
 
     // update purchase history total
-    document.getElementById("purchaseHistTotal").innerHTML = processedData.iapOverview.purchaseHistTotal
+    document.getElementById("purchaseHistTotal").innerHTML = ViewData.ProfileMap.PaymentHistory.length;
 
     // percentage of purchases that are last 100    
-    document.getElementById("percentOfTotal").innerHTML = processedData.iapOverview.PurchaseHist.percentOfTotal.toFixed(2) + "%";
+    document.getElementById("percentOfTotal").innerHTML = (ViewData.Output.PaymentHistory.TotalSpent/ViewData.Output.PaymentStats.TotalSpent*100).toFixed(2) + "%";
     document.getElementById("percentOfTotalComment").innerHTML = "(rounded to 2 decimal places)";
 
     // fave product
-    document.getElementById("faveProduct").innerHTML = processedData.iapOverview.PurchaseHist.mostPurchasedItem.Name;
+    document.getElementById("faveProduct").innerHTML = ViewData.Output.PaymentHistory.MostPurchasedItem.Name;
+    document.getElementById("faveProductComment").innerHTML = ViewData.Output.PaymentHistory.MostPurchasedItem.Amount + " of your " + ViewData.ProfileMap.PaymentHistory.length + " purchases were this item!";
 
     let chartValues = [
-        processedData.iapOverview.PurchaseHist.categories["Tour Pass"],
-        processedData.iapOverview.PurchaseHist.categories["Evnt Tkns"],
-        processedData.iapOverview.PurchaseHist.categories["Gem Pack"],
-        processedData.iapOverview.PurchaseHist.categories["Unlmtd Play"],
-        processedData.iapOverview.PurchaseHist.categories["Dx Cards"],
-        processedData.iapOverview.PurchaseHist.categories["Unique"]
+        ViewData.Output.PaymentHistory.Categories["Tour Pass"],
+        ViewData.Output.PaymentHistory.Categories["Evnt Tkns"],
+        ViewData.Output.PaymentHistory.Categories["Gem Packs"],
+        ViewData.Output.PaymentHistory.Categories["Unlmtd Play"],
+        ViewData.Output.PaymentHistory.Categories["Dx Cards"],
+        ViewData.Output.PaymentHistory.Categories["Unique"]
     ]
     let data= {
         labels: [
           "Tour Pass",
           "Evnt Tkns",
-          "Gem Pack",
+          "Gem Packs",
           "Unlmtd Play",
           "Dx Cards",
           "Unique",
@@ -875,7 +977,7 @@ async function updateDisplay(processedData) {
     });
 
     // songs unlocked
-    document.getElementById("songsUnlocked").innerHTML = processedData.GameplayOverview.songsUnlocked;
+    document.getElementById("songsUnlocked").innerHTML = ViewData.Output.Songs.Count;
 
     // get total song count from api GET
     // https://beatbot.beatscore.eu/api/count/songs
@@ -886,35 +988,35 @@ async function updateDisplay(processedData) {
             return data["count"];
         })
 
-    document.getElementById("songsUnlockedComment").innerHTML = "That's " + Math.round((processedData.GameplayOverview.songsUnlocked / totalSongs) * 100) + "% of all songs!";
+    document.getElementById("songsUnlockedComment").innerHTML = "That's " + Math.round((ViewData.Output.Songs.Count / totalSongs) * 100) + "% of all songs!";
 
-    document.getElementById("mostPlayed1").innerHTML = processedData.GameplayOverview.mostPlayedSong[1].Name;
-    document.getElementById("mostPlayed2").innerHTML = processedData.GameplayOverview.mostPlayedSong[2].Name;
-    document.getElementById("mostPlayedCommand").innerHTML = "With a total of " + (processedData.GameplayOverview.mostPlayedSong[1].PlayedCount) + " and " + (processedData.GameplayOverview.mostPlayedSong[2].PlayedCount) + " plays respectively!";
+    document.getElementById("mostPlayed1").innerHTML = ViewData.Output.Songs.MostPlayed[0].Name;
+    document.getElementById("mostPlayed2").innerHTML = ViewData.Output.Songs.MostPlayed[1].Name;
+    document.getElementById("mostPlayedCommand").innerHTML = "With a total of " + (ViewData.Output.Songs.MostPlayed[0].PlayedCount) + " and " + (ViewData.Output.Songs.MostPlayed[1].PlayedCount) + " plays respectively!";
 
     // update averages
-    // game average
-    document.getElementById("AverageNormal").innerHTML = Math.round(processedData.GameplayOverview.Averages.gameAverage.Normal.Standard);
-    document.getElementById("AverageHard").innerHTML = Math.round(processedData.GameplayOverview.Averages.gameAverage.Hard.Standard);
-    document.getElementById("AverageExtreme").innerHTML = Math.round(processedData.GameplayOverview.Averages.gameAverage.Extreme.Standard);
-    document.getElementById("AverageDeluxeNormal").innerHTML = Math.round(processedData.GameplayOverview.Averages.gameAverage.Normal.Deluxe);
-    document.getElementById("AverageDeluxeHard").innerHTML = Math.round(processedData.GameplayOverview.Averages.gameAverage.Hard.Deluxe);
-    document.getElementById("AverageDeluxeExtreme").innerHTML = Math.round(processedData.GameplayOverview.Averages.gameAverage.Extreme.Deluxe);
+    // game average. If NaN, set to 0
+    document.getElementById("AverageNormal").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Normal.Standard) || 0;
+    document.getElementById("AverageHard").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Hard.Standard) || 0;
+    document.getElementById("AverageExtreme").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Extreme.Standard) || 0;
+    document.getElementById("AverageDeluxeNormal").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Normal.Deluxe) || 0;
+    document.getElementById("AverageDeluxeHard").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Hard.Deluxe) || 0;
+    document.getElementById("AverageDeluxeExtreme").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Extreme.Deluxe) || 0;
 
     // tru average
-    document.getElementById("TruAverageNormal").innerHTML = Math.round(processedData.GameplayOverview.Averages.TruAvr.Normal.Standard);
-    document.getElementById("TruAverageHard").innerHTML = Math.round(processedData.GameplayOverview.Averages.TruAvr.Hard.Standard);
-    document.getElementById("TruAverageExtreme").innerHTML = Math.round(processedData.GameplayOverview.Averages.TruAvr.Extreme.Standard);
-    document.getElementById("TruAverageDeluxeNormal").innerHTML = Math.round(processedData.GameplayOverview.Averages.TruAvr.Normal.Deluxe);
-    document.getElementById("TruAverageDeluxeHard").innerHTML = Math.round(processedData.GameplayOverview.Averages.TruAvr.Hard.Deluxe);
-    document.getElementById("TruAverageDeluxeExtreme").innerHTML = Math.round(processedData.GameplayOverview.Averages.TruAvr.Extreme.Deluxe);
+    document.getElementById("TruAverageNormal").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Normal.Standard) || 0;
+    document.getElementById("TruAverageHard").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Hard.Standard) || 0;
+    document.getElementById("TruAverageExtreme").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Extreme.Standard) || 0;
+    document.getElementById("TruAverageDeluxeNormal").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Normal.Deluxe) || 0;
+    document.getElementById("TruAverageDeluxeHard").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Hard.Deluxe) || 0;
+    document.getElementById("TruAverageDeluxeExtreme").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Extreme.Deluxe) || 0;
 
     let mpievalues = [
-        processedData.GameplayOverview.Medals.dp,
-        processedData.GameplayOverview.Medals.d,
-        processedData.GameplayOverview.Medals.p,
-        processedData.GameplayOverview.Medals.g,
-        processedData.GameplayOverview.Medals.nm
+        ViewData.Output.Songs.Medals.dp,
+        ViewData.Output.Songs.Medals.d,
+        ViewData.Output.Songs.Medals.p,
+        ViewData.Output.Songs.Medals.g,
+        ViewData.Output.Songs.Medals.nm
     ]
     let mpiedata= {
         labels: [
@@ -1016,8 +1118,47 @@ async function handleFile(evt=null) {
 
     uploadInfo.innerHTML = "<p style='color:green;'>Your package is valid! Loading Awesomeness...</p>";
 
+    const getFile = (name) => files.find((file) => file.name === name);
+
+    const readFile = async (name) => {
+        return new Promise((resolve) => {
+            const file = getFile(name);
+            if (!file) {
+                resolve(null);
+            }
+            const fileContents = [];
+            const decoder = new fflate.DecodeUTF8();
+            file.ondata = (err, data, final) => {
+                decoder.push(data, final);
+            }
+            decoder.ondata = (str, final) => {
+                fileContents.push(str);
+                if (final) {
+                    resolve(fileContents.join(''));
+                }
+            };
+            file.start();
+        });
+    };
+
+    // create new data object
+    var rawData = {};
+    // for each file in package
+    for (const file of files) {
+        // get file name
+        const fileName = file.name;
+        // get file data
+        const fileData = await readFile(fileName);
+        // add file data to data object
+        if (fileName.endsWith('.json')) {
+            rawData[fileName.replace('.json', '')] = JSON.parse(fileData);
+        } else {
+            continue;
+        }
+    };
+
     // process data
-    await processData(files);
+    await processData(rawData);
     
 };
 
@@ -1033,6 +1174,22 @@ uploadFile.addEventListener('click', async function handleFileSelect(evt) {
 document.getElementById('upload').addEventListener('change', async function handleFileSelect(evt) {
     evt.stopPropagation();
     evt.preventDefault();
+
+    let getSongData =
+    new Promise(function(resolve, reject)
+    {
+        fetch(`/data/songs.json`)
+        .then(function(response){
+            return response.json();
+        })
+        .then((json) => {
+            resolve(json);
+        }).catch(function(err){
+            reject(err);
+        })
+    })
+
+    songData = await getSongData;
 
     handleFile(evt);
 }, false);
@@ -1086,6 +1243,22 @@ uploadFile.addEventListener('drop', async function handleFileDrop(evt) {
         return;
     }
 
+    let getSongData =
+    new Promise(function(resolve, reject)
+    {
+        fetch(`/data/songs.json`)
+        .then(function(response){
+            return response.json();
+        })
+        .then((json) => {
+            resolve(json);
+        }).catch(function(err){
+            reject(err);
+        })
+    })
+
+    songData = await getSongData;
+
     handleFile(evt);
 
 }, false);
@@ -1100,94 +1273,22 @@ dempPackage.addEventListener('click', async function handleDemoPackage(evt) {
     uploadInfo.innerHTML = "<p style='color:green;'>Loading Awesomeness...</p>";
 
     // process data
-    let demo = {
-        "Profile": {
-          "startDate": 1632050396533,
-          "userName": "Beatstar#0",
-          "userAvatar": 17,
-          "userBanner": "https://beatbot.beatscore.eu/assets/banner?banner=BB501452963&user_name=_&user_avatar=https://via.placeholder.com/128x128.png&level=20&src=True",
-          "userStars": 2596,
-          "appOpenedTimes": 1818
-        },
-        "friendsOverview": {
-          "userFriends": 7,
-          "userBrags": 44,
-          "recievedBrags": 25
-        },
-        "iapOverview": {
-          "totalSpent": 794.640000000001,
-          "iapTotalPerDay": 1.2435680751173726,
-          "purchaseHistTotal": 83,
-          "PurchaseHist": {
-            "percentOfTotal": 51.365398167723754,
-            "amountOfTotal": 408.1700000000005,
-            "mostPurchasedItem": {
-              "Name": "Event Token Pack",
-              "ProductID": "bundle-event-token-299",
-              "Amount": 65
-            },
-            "categories": {
-              "Unique": 0,
-              "Tour Pass": 12,
-              "Evnt Tkns": 66,
-              "Gem Pack": 0,
-              "Unlmtd Play": 0,
-              "Dx Cards": 7,
-              "Gem Packs": 0,
-            }
-          }
-        },
-        "GameplayOverview": {
-          "songsUnlocked": 520,
-          "mostPlayedSong": {
-            "1": {
-              "Name": "Gangnam Style",
-              "PlayedCount": 256
-            },
-            "2": {
-              "Name": "Sandstorm",
-              "PlayedCount": 175
-            }
-          },
-          "Averages": {
-            "gameAverage": {
-              "Normal": {
-                "Standard": 49922.49230769231,
-                "Deluxe": 49898
-              },
-              "Hard": {
-                "Standard": 74641.70833333333,
-                "Deluxe": 74751.71052631579
-              },
-              "Extreme": {
-                "Standard": 99013,
-                "Deluxe": 96766.95238095238
-              }
-            },
-            "TruAvr": {
-              "Normal": {
-                "Standard": 43092.18805518075,
-                "Deluxe": 47771.25
-              },
-              "Hard": {
-                "Standard": 62489.98418196045,
-                "Deluxe": 52806.97656059615
-              },
-              "Extreme": {
-                "Standard": 50229.49412671801,
-                "Deluxe": 51706.92960631376
-              }
-            }
-          },
-          "Medals": {
-            "g": 1,
-            "p": 22,
-            "d": 387,
-            "dp": 108,
-            "nm": 2
-          }
-        }
-      };
+    let demo = await fetch('data/demo.json').then((res) => res.json());
+    let getSongData =
+            new Promise(function(resolve, reject)
+            {
+                fetch(`/data/songs.json`)
+                .then(function(response){
+                    return response.json();
+                })
+                .then((json) => {
+                    resolve(json);
+                }).catch(function(err){
+                    reject(err);
+                })
+            })
+
+    songData = await getSongData;
     await updateDisplay(demo);
 }, false);
 
