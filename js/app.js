@@ -105,7 +105,7 @@ var products = {
 }
 
 async function processData(rawData) {
-    
+
     ViewData = {};
     ViewData.RawConfig = {};
     ViewData.ProfileMap = {};
@@ -143,7 +143,7 @@ async function processData(rawData) {
             }
 
         });
-        
+
         return Map;
     }
 
@@ -171,7 +171,7 @@ async function processData(rawData) {
         Response.Cases = {
             Total: profile.cases.numCasesOpened
         }
-        
+
         Response.Currencies = {
             Stars: 0,
             Vinyls: 0,
@@ -200,12 +200,12 @@ async function processData(rawData) {
                     break;
             }
         });
-        
+
 
         Response.Banners = profile.callingCards.unlockedCallingCards.map(function(x){ return {BannerId: x.templateId, EliteRank : x.seasonLevel>0?x.seasonLevel:null}});
 
         Response.Emojis = profile.emojis.unlockedEmojisId.map(function(x){ return {EmojiId: x}});
-        
+
         Response.Brags = profile.friendBrags.Brags.map(function(x){ return ParseBragData(x)});
 
         Response.LikedSongs = profile.likedBeatmaps.likedBeatmapsId.map(function(x) { return {BeatmapId: x}});
@@ -232,11 +232,11 @@ async function processData(rawData) {
         profile.subProfileTOs.forEach(function(to){
             if(to.LastPurchaseTime)
                 Response.BasicInfo.LastPurchaseDate = new Date(to.LastPurchaseTime);
-        })           
+        })
 
         return Response;
     }
-    
+
 
     function GetPlatform(platform)
     {
@@ -310,7 +310,7 @@ async function processData(rawData) {
             },
             Version: song.Version,
             BeatmapId: song.templateId,
-            
+
             PlayCount : song.PlayedCount,
             Source: song.RewardedSource,
         };
@@ -361,7 +361,7 @@ async function processData(rawData) {
             unreadableitems.filter(v => v === a).length - unreadableitems.filter(v => v === b).length
         ).pop();
         temp.Amount = items.filter(x => x === temp.Name).length;
-        
+
         return [{
             Name: temp.Name,
             ProductID: temp.ProductID,
@@ -449,7 +449,7 @@ async function processData(rawData) {
             if (songInfo.Difficulty === "Normal") {
                 if (songInfo.Type === "Standard") {
                     standardSongs.Normal.push(song);
-                    
+
                     // SET MEDAL
                     if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Diamond Perfect"]) {
                         medalData.dp++;
@@ -511,7 +511,7 @@ async function processData(rawData) {
 
                 } else if (songInfo.Type === "Deluxe") {
                     deluxeSongs.Hard.push(song);
-                    
+
                     // SET MEDAL
                     if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Diamond Perfect"]) {
                         medalData.dp++;
@@ -605,42 +605,42 @@ async function processData(rawData) {
                 },
             }
         }
-    
+
         for (song of standardSongs.Normal) {
             dataavrs.gameAverage.Normal.Standard += song.HighestScore.absoluteScore;
             dataavrs.TruAvr.Normal.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
         }
         dataavrs.gameAverage.Normal.Standard /= standardSongs.Normal.length;
         dataavrs.TruAvr.Normal.Standard /= standardSongs.Normal.length;
-    
+
         for (song of standardSongs.Hard) {
             dataavrs.gameAverage.Hard.Standard += song.HighestScore.absoluteScore;
             dataavrs.TruAvr.Hard.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
         }
         dataavrs.gameAverage.Hard.Standard /= standardSongs.Hard.length;
         dataavrs.TruAvr.Hard.Standard /= standardSongs.Hard.length;
-    
+
         for (song of standardSongs.Extreme) {
             dataavrs.gameAverage.Extreme.Standard += song.HighestScore.absoluteScore;
             dataavrs.TruAvr.Extreme.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
         }
         dataavrs.gameAverage.Extreme.Standard /= standardSongs.Extreme.length;
         dataavrs.TruAvr.Extreme.Standard /= standardSongs.Extreme.length;
-    
+
         for (song of deluxeSongs.Normal) {
             dataavrs.gameAverage.Normal.Deluxe += song.HighestScore.absoluteScore;
             dataavrs.TruAvr.Normal.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
         }
         dataavrs.gameAverage.Normal.Deluxe /= deluxeSongs.Normal.length;
         dataavrs.TruAvr.Normal.Deluxe /= deluxeSongs.Normal.length;
-    
+
         for (song of deluxeSongs.Hard) {
             dataavrs.gameAverage.Hard.Deluxe += song.HighestScore.absoluteScore;
             dataavrs.TruAvr.Hard.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
         }
         dataavrs.gameAverage.Hard.Deluxe /= deluxeSongs.Hard.length;
         dataavrs.TruAvr.Hard.Deluxe /= deluxeSongs.Hard.length;
-    
+
         for (song of deluxeSongs.Extreme) {
             dataavrs.gameAverage.Extreme.Deluxe += song.HighestScore.absoluteScore;
             dataavrs.TruAvr.Extreme.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
@@ -670,7 +670,7 @@ async function processData(rawData) {
                 })
             })
 
-        
+
         let objectResponse = Promise.all([getSongData])
         .then(function(SongData){
             // gameplayOverview.mostPlayedSong.1 and 2
@@ -678,7 +678,7 @@ async function processData(rawData) {
             // iterate through beatmaps.beatmaps and find the most played song using  "PlayedCount" as a filter
             filter = profileJson.beatmaps.beatmaps.filter(beatmap => beatmap.PlayedCount > 0);
             filter.sort((a, b) => b.PlayedCount - a.PlayedCount).templateId;
-            
+
             for (song of filter) {
                 if (songData[song.templateId] != undefined) {
                     mostPlayedSongs.push({
@@ -704,26 +704,26 @@ async function processData(rawData) {
         ViewData.RawConfig.PaymentHistory = configs[0];
         ViewData.ProfileMap.PaymentHistory = ParsePaymentHistory(configs[0]);
 
-        ViewData.RawConfig.PaymentStats = configs[1]; 
+        ViewData.RawConfig.PaymentStats = configs[1];
 
-        ViewData.RawConfig.Friends = configs[2]; 
+        ViewData.RawConfig.Friends = configs[2];
 
-        ViewData.RawConfig.UserIdentity = configs[3]; 
+        ViewData.RawConfig.UserIdentity = configs[3];
 
-        ViewData.RawConfig.Profile = configs[4]; 
+        ViewData.RawConfig.Profile = configs[4];
 
         ViewData.ProfileMap.PaymentStats = {
             TotalSpent : Math.round(configs[1].iapSpend * 100 ) / 100
         }
-        
+
         ViewData.ProfileMap.Friends = ViewData.RawConfig.Friends;
 
         ViewData.ProfileMap.UserIdentity = {
             SuperCellId : ViewData.RawConfig.UserIdentity.supercellID,
             PendingDeletion : ViewData.RawConfig.UserIdentity.pendingDeletion,
         }
-        
-        ViewData.ProfileMap.Profile = ParseProfile(configs[4]); 
+
+        ViewData.ProfileMap.Profile = ParseProfile(configs[4]);
 
         ViewData.Output.PaymentHistory = {
             TotalSpent: Math.round(ViewData.ProfileMap.PaymentHistory.map(x => x.Prices.USD).reduce((a,b) => a + b, 0) * 100) / 100,
@@ -756,29 +756,29 @@ async function processData(rawData) {
             Averages: CalculateSongAveragesAndMedals(configs[4])[0],
             Medals: CalculateSongAveragesAndMedals(configs[4])[1],
             MostPlayed: mostPlayedSongs,
-        } //Finish this           
-        
+        } //Finish this
+
         //console.log(ViewData);
         // update display
-        updateDisplay(ViewData);
+        updateDisplay(ViewData.Output);
     });
-    
+
 }
 
-async function updateDisplay(ViewData) {
-    console.log(ViewData);
+async function updateDisplay(DisplayData) {
+    console.log(DisplayData);
     // update user start date
-    let humanReadableDate = new Date(ViewData.ProfileMap.Profile.ApplicationData.Installed);
+    let humanReadableDate = new Date(DisplayData.User.Profile.ApplicationData.Installed);
     document.getElementById("userStartDate").innerHTML = humanReadableDate.toLocaleDateString("en-US");
     document.getElementById("userStartDateComment").innerHTML = Math.floor((Date.now() - humanReadableDate) / 31536000000) + " years ago" + " (" + humanReadableDate.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) + ")";
     // update user name
-    document.getElementById("userName").innerHTML = ViewData.ProfileMap.Profile.UserName.Formatted;
+    document.getElementById("userName").innerHTML = DisplayData.User.Profile.UserName.Formatted;
     // update user avatar
-    document.getElementById("userAvatar").src = "./img/profiles/" + ViewData.ProfileMap.Profile.BasicInfo.ProfileIconId + ".jpg";
+    document.getElementById("userAvatar").src = "./img/profiles/" + DisplayData.User.Profile.BasicInfo.ProfileIconId + ".jpg";
     // update user banner
-    document.getElementById("userBanner").style.backgroundImage = `url(https://beatbot.beatscore.eu/assets/banner?banner=BB${ViewData.ProfileMap.Profile.BasicInfo.Banner}&user_name=_&user_avatar=https://via.placeholder.com/128x128.png&level=20&src=True`
+    document.getElementById("userBanner").style.backgroundImage = `url(https://beatbot.beatscore.eu/assets/banner?banner=BB${DisplayData.User.Profile.BasicInfo.Banner}&user_name=_&user_avatar=https://via.placeholder.com/128x128.png&level=20&src=True`
     // update user stars
-    document.getElementById("userStars").innerHTML = ViewData.ProfileMap.Profile.Currencies.Stars;
+    document.getElementById("userStars").innerHTML = DisplayData.User.Profile.Currencies.Stars;
 
     // update user friends
     let friendscomments = {
@@ -797,13 +797,13 @@ async function updateDisplay(ViewData) {
     comment = ""
     // get the highest key that is lower or equal to the user's friends
     for (const key in friendscomments) {
-        if (ViewData.ProfileMap.Friends.length >= key) {
+        if (DisplayData.User.Friends.Count >= key) {
             if (key in (friendscomments)) {
                 comment = friendscomments[key];
             }
         }
     }
-    document.getElementById("userFriends").innerHTML = ViewData.ProfileMap.Friends.length;
+    document.getElementById("userFriends").innerHTML = DisplayData.User.Friends.Count;
     document.getElementById("userFriendsComment").innerHTML = comment;
 
     // update user brags
@@ -823,13 +823,13 @@ async function updateDisplay(ViewData) {
     comment = ""
     // get the highest key that is lower or equal to the user's brags
     for (const key in bragsComments) {
-        if (ViewData.Output.User.Brags.Sent >= key) {
+        if (DisplayData.User.Brags.Sent >= key) {
             if (key in (bragsComments)) {
                 comment = bragsComments[key];
             }
         }
     }
-    document.getElementById("userBrags").innerHTML = ViewData.Output.User.Brags.Sent;
+    document.getElementById("userBrags").innerHTML = DisplayData.User.Brags.Sent;
     document.getElementById("userBragsComment").innerHTML = comment;
 
     // update user recieved brags
@@ -849,18 +849,19 @@ async function updateDisplay(ViewData) {
     comment = ""
     // get the highest key that is lower or equal to the user's recieved brags
     for (const key in recievedBragsComments) {
-        if (ViewData.Output.User.Brags.Received >= key) {
+        if (DisplayData.User.Brags.Received >= key) {
             if (key in (recievedBragsComments)) {
                 comment = recievedBragsComments[key];
             }
         }
     }
-    document.getElementById("recievedBrags").innerHTML = ViewData.Output.User.Brags.Received;
+    document.getElementById("recievedBrags").innerHTML = DisplayData.User.Brags.Received;
     document.getElementById("recievedBragsComment").innerHTML = comment;
 
     // update user app opened times
-    document.getElementById("appOpenedTimes").innerHTML = ViewData.ProfileMap.Profile.ApplicationData.StartedCount;
-    let timesADay = ViewData.ProfileMap.Profile.ApplicationData.StartedCount / ((Date.now() - ViewData.ProfileMap.Profile.ApplicationData.Installed) / 86400000);
+    document.getElementById("appOpenedTimes").innerHTML = DisplayData.User.Profile.ApplicationData.StartedCount;
+    let installedDate = new Date(DisplayData.User.Profile.ApplicationData.Installed);
+    let timesADay = DisplayData.User.Profile.ApplicationData.StartedCount / ((Date.now() - installedDate) / 86400000);
     // if timesADay is exact number or decimal is below 0.2
     if (timesADay % 1 == 0 || timesADay % 1 < 0.2) {
         document.getElementById("appOpenedTimesComment").innerHTML = "That's " + Math.round(timesADay) + " times a day!";
@@ -887,14 +888,14 @@ async function updateDisplay(ViewData) {
     comment = ""
     // get the highest key that is lower or equal to the user's iap total
     for (const key in iapTotalComments) {
-        if (ViewData.Output.PaymentStats.TotalSpent >= key) {
+        if (DisplayData.PaymentStats.TotalSpent >= key) {
             if (key in (iapTotalComments)) {
                 comment = iapTotalComments[key];
             }
         }
     }
     // round to 2 decimal places
-    document.getElementById("iapTotal").innerHTML = "$" + ViewData.Output.PaymentStats.TotalSpent + " USD";
+    document.getElementById("iapTotal").innerHTML = "$" + DisplayData.PaymentStats.TotalSpent + " USD";
     document.getElementById("iapTotalComment").innerHTML = comment;
 
     // iap daily average
@@ -914,8 +915,7 @@ async function updateDisplay(ViewData) {
         "1000": "an air Hockey Table",
     }
 
-    let installedDate = new Date(ViewData.ProfileMap.Profile.ApplicationData.Installed);
-    let TotalPerDay = (ViewData.Output.PaymentStats.TotalSpent / ((Date.now() - installedDate) / 86400000)).toFixed(2);
+    let TotalPerDay = (DisplayData.PaymentStats.TotalSpent / ((Date.now() - installedDate) / 86400000)).toFixed(2);
     document.getElementById("iapDailyAverage").innerHTML = "$" + TotalPerDay + " USD";
     comment = ""
     // get the highest key that is lower or equal to the user's iap daily average
@@ -930,23 +930,23 @@ async function updateDisplay(ViewData) {
 
 
     // update purchase history total
-    document.getElementById("purchaseHistTotal").innerHTML = ViewData.ProfileMap.PaymentHistory.length;
+    document.getElementById("purchaseHistTotal").innerHTML = DisplayData.PaymentHistory.Count;
 
-    // percentage of purchases that are last 100    
-    document.getElementById("percentOfTotal").innerHTML = (ViewData.Output.PaymentHistory.TotalSpent/ViewData.Output.PaymentStats.TotalSpent*100).toFixed(2) + "%";
+    // percentage of purchases that are last 100
+    document.getElementById("percentOfTotal").innerHTML = (DisplayData.PaymentHistory.TotalSpent/DisplayData.PaymentStats.TotalSpent*100).toFixed(2) + "%";
     document.getElementById("percentOfTotalComment").innerHTML = "(rounded to 2 decimal places)";
 
     // fave product
-    document.getElementById("faveProduct").innerHTML = ViewData.Output.PaymentHistory.MostPurchasedItem.Name;
-    document.getElementById("faveProductComment").innerHTML = ViewData.Output.PaymentHistory.MostPurchasedItem.Amount + " of your " + ViewData.ProfileMap.PaymentHistory.length + " purchases were this item!";
+    document.getElementById("faveProduct").innerHTML = DisplayData.PaymentHistory.MostPurchasedItem.Name;
+    document.getElementById("faveProductComment").innerHTML = DisplayData.PaymentHistory.MostPurchasedItem.Amount + " of your " + DisplayData.PaymentHistory.Count + " purchases were this item!";
 
     let chartValues = [
-        ViewData.Output.PaymentHistory.Categories["Tour Pass"],
-        ViewData.Output.PaymentHistory.Categories["Evnt Tkns"],
-        ViewData.Output.PaymentHistory.Categories["Gem Packs"],
-        ViewData.Output.PaymentHistory.Categories["Unlmtd Play"],
-        ViewData.Output.PaymentHistory.Categories["Dx Cards"],
-        ViewData.Output.PaymentHistory.Categories["Unique"]
+        DisplayData.PaymentHistory.Categories["Tour Pass"],
+        DisplayData.PaymentHistory.Categories["Evnt Tkns"],
+        DisplayData.PaymentHistory.Categories["Gem Packs"],
+        DisplayData.PaymentHistory.Categories["Unlmtd Play"],
+        DisplayData.PaymentHistory.Categories["Dx Cards"],
+        DisplayData.PaymentHistory.Categories["Unique"]
     ]
     let data= {
         labels: [
@@ -957,7 +957,7 @@ async function updateDisplay(ViewData) {
           "Dx Cards",
           "Unique",
         ],
-    
+
         datasets: [
           {
             name: "Counts",
@@ -977,7 +977,7 @@ async function updateDisplay(ViewData) {
     });
 
     // songs unlocked
-    document.getElementById("songsUnlocked").innerHTML = ViewData.Output.Songs.Count;
+    document.getElementById("songsUnlocked").innerHTML = DisplayData.Songs.Count;
 
     // get total song count from api GET
     // https://beatbot.beatscore.eu/api/count/songs
@@ -988,35 +988,35 @@ async function updateDisplay(ViewData) {
             return data["count"];
         })
 
-    document.getElementById("songsUnlockedComment").innerHTML = "That's " + Math.round((ViewData.Output.Songs.Count / totalSongs) * 100) + "% of all songs!";
+    document.getElementById("songsUnlockedComment").innerHTML = "That's " + Math.round((DisplayData.Songs.Count / totalSongs) * 100) + "% of all songs!";
 
-    document.getElementById("mostPlayed1").innerHTML = ViewData.Output.Songs.MostPlayed[0].Name;
-    document.getElementById("mostPlayed2").innerHTML = ViewData.Output.Songs.MostPlayed[1].Name;
-    document.getElementById("mostPlayedCommand").innerHTML = "With a total of " + (ViewData.Output.Songs.MostPlayed[0].PlayedCount) + " and " + (ViewData.Output.Songs.MostPlayed[1].PlayedCount) + " plays respectively!";
+    document.getElementById("mostPlayed1").innerHTML = DisplayData.Songs.MostPlayed[0].Name;
+    document.getElementById("mostPlayed2").innerHTML = DisplayData.Songs.MostPlayed[1].Name;
+    document.getElementById("mostPlayedCommand").innerHTML = "With a total of " + (DisplayData.Songs.MostPlayed[0].PlayedCount) + " and " + (DisplayData.Songs.MostPlayed[1].PlayedCount) + " plays respectively!";
 
     // update averages
     // game average. If NaN, set to 0
-    document.getElementById("AverageNormal").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Normal.Standard) || 0;
-    document.getElementById("AverageHard").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Hard.Standard) || 0;
-    document.getElementById("AverageExtreme").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Extreme.Standard) || 0;
-    document.getElementById("AverageDeluxeNormal").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Normal.Deluxe) || 0;
-    document.getElementById("AverageDeluxeHard").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Hard.Deluxe) || 0;
-    document.getElementById("AverageDeluxeExtreme").innerHTML = Math.round(ViewData.Output.Songs.Averages.gameAverage.Extreme.Deluxe) || 0;
+    document.getElementById("AverageNormal").innerHTML = Math.round(DisplayData.Songs.Averages.gameAverage.Normal.Standard) || 0;
+    document.getElementById("AverageHard").innerHTML = Math.round(DisplayData.Songs.Averages.gameAverage.Hard.Standard) || 0;
+    document.getElementById("AverageExtreme").innerHTML = Math.round(DisplayData.Songs.Averages.gameAverage.Extreme.Standard) || 0;
+    document.getElementById("AverageDeluxeNormal").innerHTML = Math.round(DisplayData.Songs.Averages.gameAverage.Normal.Deluxe) || 0;
+    document.getElementById("AverageDeluxeHard").innerHTML = Math.round(DisplayData.Songs.Averages.gameAverage.Hard.Deluxe) || 0;
+    document.getElementById("AverageDeluxeExtreme").innerHTML = Math.round(DisplayData.Songs.Averages.gameAverage.Extreme.Deluxe) || 0;
 
     // tru average
-    document.getElementById("TruAverageNormal").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Normal.Standard) || 0;
-    document.getElementById("TruAverageHard").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Hard.Standard) || 0;
-    document.getElementById("TruAverageExtreme").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Extreme.Standard) || 0;
-    document.getElementById("TruAverageDeluxeNormal").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Normal.Deluxe) || 0;
-    document.getElementById("TruAverageDeluxeHard").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Hard.Deluxe) || 0;
-    document.getElementById("TruAverageDeluxeExtreme").innerHTML = Math.round(ViewData.Output.Songs.Averages.TruAvr.Extreme.Deluxe) || 0;
+    document.getElementById("TruAverageNormal").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Normal.Standard) || 0;
+    document.getElementById("TruAverageHard").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Hard.Standard) || 0;
+    document.getElementById("TruAverageExtreme").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Extreme.Standard) || 0;
+    document.getElementById("TruAverageDeluxeNormal").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Normal.Deluxe) || 0;
+    document.getElementById("TruAverageDeluxeHard").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Hard.Deluxe) || 0;
+    document.getElementById("TruAverageDeluxeExtreme").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Extreme.Deluxe) || 0;
 
     let mpievalues = [
-        ViewData.Output.Songs.Medals.dp,
-        ViewData.Output.Songs.Medals.d,
-        ViewData.Output.Songs.Medals.p,
-        ViewData.Output.Songs.Medals.g,
-        ViewData.Output.Songs.Medals.nm
+        DisplayData.Songs.Medals.dp,
+        DisplayData.Songs.Medals.d,
+        DisplayData.Songs.Medals.p,
+        DisplayData.Songs.Medals.g,
+        DisplayData.Songs.Medals.nm
     ]
     let mpiedata= {
         labels: [
@@ -1026,7 +1026,7 @@ async function updateDisplay(ViewData) {
             "Gold",
             "No Medal",
         ],
-    
+
         datasets: [
           {
             name: "Counts",
@@ -1049,7 +1049,7 @@ async function updateDisplay(ViewData) {
     // SHOW DISPLAY
     let display =  document.getElementById("app-data")
     let input = document.getElementById("app-input")
-    // add class 
+    // add class
     display.classList.add("active");
     input.classList.add("inactive");
 
@@ -1107,7 +1107,7 @@ async function handleFile(evt=null) {
             uz.push(value.subarray(i, i + 65536), false);
         }
     }
-    
+
     // check if package is valid
     const validPackage = await checkPackage(files);
 
@@ -1159,7 +1159,7 @@ async function handleFile(evt=null) {
 
     // process data
     await processData(rawData);
-    
+
 };
 
 // handle file select event
