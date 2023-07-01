@@ -11,11 +11,11 @@ var products = {
     },
     "bundle-event-token-[0-9]+": {
         "Name": "Event Token Pack",
-        "Category": "Evnt Tkns",
+        "Category": "Event Tokens",
     },
     "shop-leaderboard-event-[0-9]+": {
         "Name": "Event Token Pack",
-        "Category": "Evnt Tkns",
+        "Category": "Event Tokens",
     },
     "currency-pack-1": {
         "Name": "$1.99 Gem Pack",
@@ -47,17 +47,17 @@ var products = {
     },
     "bundle-backstagepass-[0-9]+-[0-9]+days-[0-9]+dia": {
         "Name": "Unlimited Play Pass",
-        "Category": "Unlmtd Play",
+        "Category": "Unlimited Play",
     },
 
     // Less Common Products
     "liveops-bundle-170-liveops-bundle-launchDeluxe-150-cards": {
         "Name": "Deluxe Card Pack",
-        "Category": "Dx Cards",
+        "Category": "Deluxe Cards",
     },
     "liveops-bundle-[0-9]+-liveops-bundle-Deluxe-[0-9]+-cards": {
         "Name": "Deluxe Card Pack",
-        "Category": "Dx Cards",
+        "Category": "Deluxe Cards",
     },
 
     // Unique/One-Off Products
@@ -105,7 +105,7 @@ var products = {
 }
 
 async function processData(rawData) {
-
+    
     ViewData = {};
     ViewData.RawConfig = {};
     ViewData.ProfileMap = {};
@@ -143,7 +143,7 @@ async function processData(rawData) {
             }
 
         });
-
+        
         return Map;
     }
 
@@ -171,7 +171,7 @@ async function processData(rawData) {
         Response.Cases = {
             Total: profile.cases.numCasesOpened
         }
-
+        
         Response.Currencies = {
             Stars: 0,
             Vinyls: 0,
@@ -200,12 +200,12 @@ async function processData(rawData) {
                     break;
             }
         });
-
+        
 
         Response.Banners = profile.callingCards.unlockedCallingCards.map(function(x){ return {BannerId: x.templateId, EliteRank : x.seasonLevel>0?x.seasonLevel:null}});
 
         Response.Emojis = profile.emojis.unlockedEmojisId.map(function(x){ return {EmojiId: x}});
-
+        
         Response.Brags = profile.friendBrags.Brags.map(function(x){ return ParseBragData(x)});
 
         Response.LikedSongs = profile.likedBeatmaps.likedBeatmapsId.map(function(x) { return {BeatmapId: x}});
@@ -232,11 +232,11 @@ async function processData(rawData) {
         profile.subProfileTOs.forEach(function(to){
             if(to.LastPurchaseTime)
                 Response.BasicInfo.LastPurchaseDate = new Date(to.LastPurchaseTime);
-        })
+        })           
 
         return Response;
     }
-
+    
 
     function GetPlatform(platform)
     {
@@ -310,7 +310,7 @@ async function processData(rawData) {
             },
             Version: song.Version,
             BeatmapId: song.templateId,
-
+            
             PlayCount : song.PlayedCount,
             Source: song.RewardedSource,
         };
@@ -320,6 +320,11 @@ async function processData(rawData) {
     }
 
     function GetMostPurchasedItem(paymentHistoryJson) {
+        // filter out items that dont have receiptKey 
+        paymentHistoryJson = paymentHistoryJson.filter(function (item) {
+            return item.receiptKey;
+        });
+        console.log(paymentHistoryJson);
         temp = {};
         items = [];
         unreadableitems = [];
@@ -328,10 +333,10 @@ async function processData(rawData) {
         categories = {
             "Unique": 0,
             "Tour Pass": 0,
-            "Evnt Tkns": 0,
+            "Event Tokens": 0,
             "Gem Packs": 0,
-            "Unlmtd Play": 0,
-            "Dx Cards": 0,
+            "Unlimited Play": 0,
+            "Deluxe Cards": 0,
         };
         for (purchase of paymentHistoryJson) {
             let unreadable = purchase.purchase.productId
@@ -361,7 +366,7 @@ async function processData(rawData) {
             unreadableitems.filter(v => v === a).length - unreadableitems.filter(v => v === b).length
         ).pop();
         temp.Amount = items.filter(x => x === temp.Name).length;
-
+        
         return [{
             Name: temp.Name,
             ProductID: temp.ProductID,
@@ -449,7 +454,7 @@ async function processData(rawData) {
             if (songInfo.Difficulty === "Normal") {
                 if (songInfo.Type === "Standard") {
                     standardSongs.Normal.push(song);
-
+                    
                     // SET MEDAL
                     if (song.HighestScore.absoluteScore >= medalThresholds.Standard.Normal["Diamond Perfect"]) {
                         medalData.dp++;
@@ -511,7 +516,7 @@ async function processData(rawData) {
 
                 } else if (songInfo.Type === "Deluxe") {
                     deluxeSongs.Hard.push(song);
-
+                    
                     // SET MEDAL
                     if (song.HighestScore.absoluteScore >= medalThresholds.Deluxe.Hard["Diamond Perfect"]) {
                         medalData.dp++;
@@ -605,45 +610,75 @@ async function processData(rawData) {
                 },
             }
         }
-
+    
         for (song of standardSongs.Normal) {
             dataavrs.gameAverage.Normal.Standard += song.HighestScore.absoluteScore;
-            dataavrs.TruAvr.Normal.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
+
+            if (song.PlayedCount === 0) {
+                dataavrs.TruAvr.Normal.Standard += song.HighestScore.absoluteScore;
+            } else {
+                dataavrs.TruAvr.Normal.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
+            }
         }
         dataavrs.gameAverage.Normal.Standard /= standardSongs.Normal.length;
         dataavrs.TruAvr.Normal.Standard /= standardSongs.Normal.length;
-
+    
         for (song of standardSongs.Hard) {
             dataavrs.gameAverage.Hard.Standard += song.HighestScore.absoluteScore;
-            dataavrs.TruAvr.Hard.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
+
+            if (song.PlayedCount === 0) {
+                dataavrs.TruAvr.Hard.Standard += song.HighestScore.absoluteScore;
+            } else {
+                dataavrs.TruAvr.Hard.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
+            }
         }
         dataavrs.gameAverage.Hard.Standard /= standardSongs.Hard.length;
         dataavrs.TruAvr.Hard.Standard /= standardSongs.Hard.length;
-
+    
         for (song of standardSongs.Extreme) {
             dataavrs.gameAverage.Extreme.Standard += song.HighestScore.absoluteScore;
-            dataavrs.TruAvr.Extreme.Standard += song.AbsoluteLifetimeScore / song.PlayedCount;
+
+            if (song.PlayedCount === 0) {
+                dataavrs.TruAvr.Extreme.Standard += song.AbsoluteLifetimeScore
+            } else {
+                dataavrs.TruAvr.Extreme.Standard += song.HighestScore.absoluteScore / song.PlayedCount;
+            }
         }
         dataavrs.gameAverage.Extreme.Standard /= standardSongs.Extreme.length;
         dataavrs.TruAvr.Extreme.Standard /= standardSongs.Extreme.length;
-
+    
         for (song of deluxeSongs.Normal) {
             dataavrs.gameAverage.Normal.Deluxe += song.HighestScore.absoluteScore;
-            dataavrs.TruAvr.Normal.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
+
+            if (song.PlayedCount === 0) {
+                dataavrs.TruAvr.Normal.Deluxe += song.HighestScore.absoluteScore;
+            } else {
+                dataavrs.TruAvr.Normal.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
+            }
         }
         dataavrs.gameAverage.Normal.Deluxe /= deluxeSongs.Normal.length;
         dataavrs.TruAvr.Normal.Deluxe /= deluxeSongs.Normal.length;
-
+    
         for (song of deluxeSongs.Hard) {
             dataavrs.gameAverage.Hard.Deluxe += song.HighestScore.absoluteScore;
-            dataavrs.TruAvr.Hard.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
+
+            if (song.PlayedCount === 0) {
+                dataavrs.TruAvr.Hard.Deluxe += song.HighestScore.absoluteScore;
+            } else {
+                dataavrs.TruAvr.Hard.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
+            }
         }
         dataavrs.gameAverage.Hard.Deluxe /= deluxeSongs.Hard.length;
         dataavrs.TruAvr.Hard.Deluxe /= deluxeSongs.Hard.length;
-
+    
         for (song of deluxeSongs.Extreme) {
             dataavrs.gameAverage.Extreme.Deluxe += song.HighestScore.absoluteScore;
-            dataavrs.TruAvr.Extreme.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
+
+            if (song.PlayedCount === 0) {
+                dataavrs.TruAvr.Extreme.Deluxe += song.HighestScore.absoluteScore;
+            } else {
+                dataavrs.TruAvr.Extreme.Deluxe += song.AbsoluteLifetimeScore / song.PlayedCount;
+            }
         }
         dataavrs.gameAverage.Extreme.Deluxe /= deluxeSongs.Extreme.length;
         dataavrs.TruAvr.Extreme.Deluxe /= deluxeSongs.Extreme.length;
@@ -670,7 +705,7 @@ async function processData(rawData) {
                 })
             })
 
-
+        
         let objectResponse = Promise.all([getSongData])
         .then(function(SongData){
             // gameplayOverview.mostPlayedSong.1 and 2
@@ -678,7 +713,7 @@ async function processData(rawData) {
             // iterate through beatmaps.beatmaps and find the most played song using  "PlayedCount" as a filter
             filter = profileJson.beatmaps.beatmaps.filter(beatmap => beatmap.PlayedCount > 0);
             filter.sort((a, b) => b.PlayedCount - a.PlayedCount).templateId;
-
+            
             for (song of filter) {
                 if (songData[song.templateId] != undefined) {
                     mostPlayedSongs.push({
@@ -704,26 +739,26 @@ async function processData(rawData) {
         ViewData.RawConfig.PaymentHistory = configs[0];
         ViewData.ProfileMap.PaymentHistory = ParsePaymentHistory(configs[0]);
 
-        ViewData.RawConfig.PaymentStats = configs[1];
+        ViewData.RawConfig.PaymentStats = configs[1]; 
 
-        ViewData.RawConfig.Friends = configs[2];
+        ViewData.RawConfig.Friends = configs[2]; 
 
-        ViewData.RawConfig.UserIdentity = configs[3];
+        ViewData.RawConfig.UserIdentity = configs[3]; 
 
-        ViewData.RawConfig.Profile = configs[4];
+        ViewData.RawConfig.Profile = configs[4]; 
 
         ViewData.ProfileMap.PaymentStats = {
             TotalSpent : Math.round(configs[1].iapSpend * 100 ) / 100
         }
-
+        
         ViewData.ProfileMap.Friends = ViewData.RawConfig.Friends;
 
         ViewData.ProfileMap.UserIdentity = {
             SuperCellId : ViewData.RawConfig.UserIdentity.supercellID,
             PendingDeletion : ViewData.RawConfig.UserIdentity.pendingDeletion,
         }
-
-        ViewData.ProfileMap.Profile = ParseProfile(configs[4]);
+        
+        ViewData.ProfileMap.Profile = ParseProfile(configs[4]); 
 
         ViewData.Output.PaymentHistory = {
             TotalSpent: Math.round(ViewData.ProfileMap.PaymentHistory.map(x => x.Prices.USD).reduce((a,b) => a + b, 0) * 100) / 100,
@@ -756,13 +791,13 @@ async function processData(rawData) {
             Averages: CalculateSongAveragesAndMedals(configs[4])[0],
             Medals: CalculateSongAveragesAndMedals(configs[4])[1],
             MostPlayed: mostPlayedSongs,
-        } //Finish this
-
+        } //Finish this           
+        
         //console.log(ViewData);
         // update display
         updateDisplay(ViewData.Output);
     });
-
+    
 }
 
 async function updateDisplay(DisplayData) {
@@ -932,7 +967,7 @@ async function updateDisplay(DisplayData) {
     // update purchase history total
     document.getElementById("purchaseHistTotal").innerHTML = DisplayData.PaymentHistory.Count;
 
-    // percentage of purchases that are last 100
+    // percentage of purchases that are last 100    
     document.getElementById("percentOfTotal").innerHTML = (DisplayData.PaymentHistory.TotalSpent/DisplayData.PaymentStats.TotalSpent*100).toFixed(2) + "%";
     document.getElementById("percentOfTotalComment").innerHTML = "(rounded to 2 decimal places)";
 
@@ -940,41 +975,32 @@ async function updateDisplay(DisplayData) {
     document.getElementById("faveProduct").innerHTML = DisplayData.PaymentHistory.MostPurchasedItem.Name;
     document.getElementById("faveProductComment").innerHTML = DisplayData.PaymentHistory.MostPurchasedItem.Amount + " of your " + DisplayData.PaymentHistory.Count + " purchases were this item!";
 
-    let chartValues = [
-        DisplayData.PaymentHistory.Categories["Tour Pass"],
-        DisplayData.PaymentHistory.Categories["Evnt Tkns"],
-        DisplayData.PaymentHistory.Categories["Gem Packs"],
-        DisplayData.PaymentHistory.Categories["Unlmtd Play"],
-        DisplayData.PaymentHistory.Categories["Dx Cards"],
-        DisplayData.PaymentHistory.Categories["Unique"]
-    ]
-    let data= {
-        labels: [
-          "Tour Pass",
-          "Evnt Tkns",
-          "Gem Packs",
-          "Unlmtd Play",
-          "Dx Cards",
-          "Unique",
-        ],
-
-        datasets: [
-          {
-            name: "Counts",
-            chartType: "percentage",
-            values: chartValues,
-          }
-        ]
-      }
-    let spendingchart = new frappe.Chart("#pchart", {
-        title: "Spending By Category",
-        // or DOM element
-        data: data,
-        type: "percentage", // or 'bar', 'line', 'pie', 'percentage'
-        height: 160,
-        truncateLegends: true,
-        colors: ["#410B13", "#CD5D67", "#BA1F33", "#421820", "#91171F", "#e01e37"],
+    Res = DisplayData.PaymentHistory
+    colors = {
+        "Unique": "#912d7a",
+        "Tour Pass": "#2f2d91",
+        "Event Tokens": "#916e2d",
+        "Gem Packs": "#2d8491",
+        "Unlimited Play": "#917f2d",
+        "Deluxe Cards": "#5a2d91",
+    }
+  
+    var total = 0;
+    Object.keys(Res.Categories).forEach(function(key){
+        total+=Res.Categories[key];
     });
+    
+    LinesDOM = "";
+    
+    Object.keys(Res.Categories).forEach(function(key){
+        // color random
+        LinesDOM+= `<div class="inner" style="width:${Res.Categories[key] / total * 100}%; background-color: ${colors[key]};">${Math.round(Res.Categories[key] / total * 100)}%</div>`;
+    });
+    
+    let frame = document.getElementById("frame");
+    frame.innerHTML += `<div class="outer">${LinesDOM}</div>`;
+    
+    frame.innerHTML += `<ul class="legend">${Object.keys(Res.Categories).map(function(x) { if (Res.Categories[x] > 0) { return `<li class="legend-key" style="--li-color: ${colors[x]};">${x}: ${Res.Categories[x]}</li>`} else { return "" }}).join("")}</ul>`;
 
     // songs unlocked
     document.getElementById("songsUnlocked").innerHTML = DisplayData.Songs.Count;
@@ -1004,7 +1030,7 @@ async function updateDisplay(DisplayData) {
     document.getElementById("AverageDeluxeExtreme").innerHTML = Math.round(DisplayData.Songs.Averages.gameAverage.Extreme.Deluxe) || 0;
 
     // tru average
-    document.getElementById("TruAverageNormal").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Normal.Standard) || 0;
+    document.getElementById("TruAverageNormal").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Normal.Standard) || "0 (NaN)";
     document.getElementById("TruAverageHard").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Hard.Standard) || 0;
     document.getElementById("TruAverageExtreme").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Extreme.Standard) || 0;
     document.getElementById("TruAverageDeluxeNormal").innerHTML = Math.round(DisplayData.Songs.Averages.TruAvr.Normal.Deluxe) || 0;
@@ -1026,7 +1052,7 @@ async function updateDisplay(DisplayData) {
             "Gold",
             "No Medal",
         ],
-
+    
         datasets: [
           {
             name: "Counts",
@@ -1040,7 +1066,7 @@ async function updateDisplay(DisplayData) {
         // or DOM element
         data: mpiedata,
         type: "pie", // or 'bar', 'line', 'pie', 'percentage'
-        height: 300,
+        height: 350,
         truncateLegends: true,
         colors: ["#410B13", "#CD5D67", "#BA1F33", "#421820", "#91171F", "#e01e37"],
     });
@@ -1049,7 +1075,7 @@ async function updateDisplay(DisplayData) {
     // SHOW DISPLAY
     let display =  document.getElementById("app-data")
     let input = document.getElementById("app-input")
-    // add class
+    // add class 
     display.classList.add("active");
     input.classList.add("inactive");
 
@@ -1107,7 +1133,7 @@ async function handleFile(evt=null) {
             uz.push(value.subarray(i, i + 65536), false);
         }
     }
-
+    
     // check if package is valid
     const validPackage = await checkPackage(files);
 
@@ -1159,7 +1185,7 @@ async function handleFile(evt=null) {
 
     // process data
     await processData(rawData);
-
+    
 };
 
 // handle file select event
