@@ -832,3 +832,55 @@ body {
     border: none;
     
 }
+
+
+/*
+flex on .outer, height 100% on .inner
+and flex with flex basis on legend
+*/
+.outer {
+    display: flex;
+    flex-direction: row;
+    height: 20px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 0;
+}
+.inner {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-size: 1.1vmin;
+}
+.legend {
+    display: flex;
+    flex-direction: column;
+    width: 85%;
+    margin: 0 auto;
+    padding: 0;
+}
+.legend li::marker {
+    color: var(--li-color);
+}
+.legend-circle {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+}
