@@ -200,6 +200,8 @@ async function processData(rawData) {
                     break;
             }
         });
+
+        Response.PremiumActive = profile.seasons.premiumPassActive;
         
 
         Response.Banners = profile.callingCards.unlockedCallingCards.map(function(x){ return {BannerId: x.templateId, EliteRank : x.seasonLevel>0?x.seasonLevel:null}});
@@ -809,6 +811,15 @@ async function processData(rawData) {
 
 async function updateDisplay(DisplayData) {
     console.log(DisplayData);
+    // update user preium pin
+    let premiumPin = document.getElementById("TourPassPin");
+    if (!DisplayData.User.Profile.PremiumActive) {
+        premiumPin.style.display = "none";
+    } else {
+        null;
+    }
+
+
     // update user start date
     let humanReadableDate = new Date(DisplayData.User.Profile.ApplicationData.Installed);
     document.getElementById("userStartDate").innerHTML = humanReadableDate.toLocaleDateString("en-US");
