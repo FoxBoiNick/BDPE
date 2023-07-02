@@ -748,7 +748,7 @@ async function processData(rawData) {
         ViewData.RawConfig.Profile = configs[4]; 
 
         ViewData.ProfileMap.PaymentStats = {
-            TotalSpent : Math.round(configs[1].iapSpend * 100 ) / 100
+            TotalSpent : Math.round(configs[1].iapSpend * 100 ) / 100 || 0,
         }
         
         ViewData.ProfileMap.Friends = ViewData.RawConfig.Friends;
@@ -760,10 +760,17 @@ async function processData(rawData) {
         
         ViewData.ProfileMap.Profile = ParseProfile(configs[4]); 
 
+        CurrencyValue = "USD"
+        try {
+            CurrencyValue = ViewData.ProfileMap.PaymentHistory[0].Prices.Currency
+        } catch {
+            CurrencyValue = "USD"
+        }
+
         ViewData.Output.PaymentHistory = {
             TotalSpent: Math.round(ViewData.ProfileMap.PaymentHistory.map(x => x.Prices.USD).reduce((a,b) => a + b, 0) * 100) / 100,
             TotalSpentLocal: Math.round(ViewData.ProfileMap.PaymentHistory.map(x => x.Prices.Local).reduce((a,b) => a + b, 0) * 100) / 100,
-            Currency: ViewData.ProfileMap.PaymentHistory[0].Prices.Currency,
+            Currency: CurrencyValue,
             Count: ViewData.ProfileMap.PaymentHistory.length,
             MostPurchasedItem: GetMostPurchasedItem(configs[0])[0],
             Categories: GetMostPurchasedItem(configs[0])[1],
@@ -967,12 +974,18 @@ async function updateDisplay(DisplayData) {
     // update purchase history total
     document.getElementById("purchaseHistTotal").innerHTML = DisplayData.PaymentHistory.Count;
 
-    // percentage of purchases that are last 100    
-    document.getElementById("percentOfTotal").innerHTML = (DisplayData.PaymentHistory.TotalSpent/DisplayData.PaymentStats.TotalSpent*100).toFixed(2) + "%";
+    // percentage of purchases that are last 100   
+    percOfTot = (DisplayData.PaymentHistory.TotalSpent/DisplayData.PaymentStats.TotalSpent*100).toFixed(2);
+    // if percOfTot is not a number
+    if (isNaN(percOfTot)) {
+        percOfTot = 0;
+    }
+
+    document.getElementById("percentOfTotal").innerHTML = percOfTot + "%";
     document.getElementById("percentOfTotalComment").innerHTML = "(rounded to 2 decimal places)";
 
     // fave product
-    document.getElementById("faveProduct").innerHTML = DisplayData.PaymentHistory.MostPurchasedItem.Name;
+    document.getElementById("faveProduct").innerHTML = DisplayData.PaymentHistory.MostPurchasedItem.Name || "F2P";
     document.getElementById("faveProductComment").innerHTML = DisplayData.PaymentHistory.MostPurchasedItem.Amount + " of your " + DisplayData.PaymentHistory.Count + " purchases were this item!";
 
     Res = DisplayData.PaymentHistory
