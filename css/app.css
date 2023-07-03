@@ -657,7 +657,7 @@ body {
    /* Style the tab */
 .tab {
     overflow: hidden;
-    border: 1px solid rgba(255, 78, 78, 0.5);
+    border: 2px solid rgba(255, 78, 78, 0.5);
     width: fit-content;
     color: #fff;
 }
@@ -707,9 +707,12 @@ body {
 }
   
 /* Change background color of buttons on hover */
-.tab button:hover {
+.tab.rounded button:hover {
     /*background-color: rgba(255, 78, 78, 0.2);*/
     border: 2px solid rgba(255, 78, 78, 0.5);
+}
+.tab button:hover {
+    background-color: rgba(255, 78, 78, 0.2);
 }
   
   /* Create an active/current tablink class */
