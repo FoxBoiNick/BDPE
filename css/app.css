@@ -215,6 +215,14 @@ body {
     display: none;
 }
 
+.display {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    color: white;
+    width: 100%;
+  }
+
 .container .description {
     color: #fff;
     font-family: "Roboto", sans-serif;
@@ -412,13 +420,13 @@ body {
 .app-data.active {
     display: flex;
 }
-.app-data .display {
-    display: grid;
-    grid-gap: 15px;
+.tabcontent.griddata {
+    gap: 15px;
     height: 100%;
-    width: 100%;
+    grid-template-rows: repeat(1fr);
 
     color: #fff;
+    flex-direction: column;
 }
 
 
@@ -451,12 +459,14 @@ body {
     color: #d94c4c;
 }
 
-
+.card.user {
+    padding: 0;
+}
 
 
 
 @media (min-width: 750px) {
-    .app-data .display {
+    .tabcontent.griddata {
         grid-template-columns: repeat(11, 1fr);
     }
 
@@ -483,7 +493,7 @@ body {
     }
 }
 @media (max-width: 950px) and (min-width: 750px) {
-    .app-data .display {
+    .tabcontent.griddata {
         grid-template-columns: repeat(11, 1fr);
     }
 
@@ -502,6 +512,10 @@ body {
     .card.temp3 {
         grid-column: 8 / 12;
         grid-row: 2 / 4;
+    }
+    .card.temp4 {
+        grid-column: 1 / 12;
+        grid-row: 4 / 6;
     }
 }
 
@@ -647,6 +661,13 @@ body {
     width: fit-content;
     color: #fff;
 }
+.tabcontent.full {
+    display: none;
+    grid-gap: 15px;
+    height: 100%;
+    border: none;
+    min-height: calc(100vh - 390px);
+}
   
   /* Style the buttons that are used to open the tab content */
 .tab button {
@@ -659,10 +680,36 @@ body {
     transition: 0.3s;
     color: inherit;
 }
+/* Style the buttons that are used to open the tab content */
+.tab.rounded {
+    display: flex;
+    border: none;
+    gap: 10px;
+}
+.tab.center-page {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+.tab.rounded button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px 16px;
+    transition: 0.3s;
+    color: inherit;
+    border: 2px solid rgba(0, 1, 17, 0.5);
+    background-color: rgba(0, 1, 17, 0.5);
+    border-radius: 25px;
+    transition: all 0.5s fade-in-out;
+}
   
 /* Change background color of buttons on hover */
 .tab button:hover {
-    background-color: rgba(255, 78, 78, 0.5);
+    /*background-color: rgba(255, 78, 78, 0.2);*/
+    border: 2px solid rgba(255, 78, 78, 0.5);
 }
   
   /* Create an active/current tablink class */
@@ -883,4 +930,22 @@ and flex with flex basis on legend
     width: 2px;
     height: 2px;
     border-radius: 50%;
+}
+
+.owo-whats-this {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    text-align: center;
+    /* vert center */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    grid-column: 1 / 12;
+
+    font-family: "Roboto", sans-serif;
+    font-weight: 900;
+    font-size: 10vmin;
+    color: rgba(255, 78, 78, 0.5);
+
 }

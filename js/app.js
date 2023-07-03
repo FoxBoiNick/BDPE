@@ -105,6 +105,14 @@ var products = {
 }
 
 async function processData(rawData) {
+
+
+    no_timeout = false;
+    setTimeout(function(){ 
+        if (no_timeout) return;
+        uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file, please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
+        return;
+    }, 5000);
     
     ViewData = {};
     ViewData.RawConfig = {};
@@ -804,6 +812,7 @@ async function processData(rawData) {
         
         //console.log(ViewData);
         // update display
+        no_timeout = true;
         updateDisplay(ViewData.Output);
     });
     
@@ -1128,6 +1137,14 @@ async function checkPackage(files) {
 
 // handle file
 async function handleFile(evt=null) {
+    // add timeout for 5 seconds
+    var no_timeout = false;
+    setTimeout(function(){ 
+        if (no_timeout) return;
+        uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file, please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
+        return;
+    }, 5000);
+
     // get file object
     if (evt != null) {
         var filesz = evt.target.files || evt.dataTransfer.files;
@@ -1201,13 +1218,21 @@ async function handleFile(evt=null) {
         const fileData = await readFile(fileName);
         // add file data to data object
         if (fileName.endsWith('.json')) {
-            rawData[fileName.replace('.json', '')] = JSON.parse(fileData);
+            try{
+                rawData[fileName.replace('.json', '')] = JSON.parse(fileData);
+            } catch (err) {
+                console.log(err);
+                uploadInfo.innerHTML = "<p style='color:red;'>Your package seems to be corrupted. Click or drop your package file here to retry</p>";
+                no_timeout = true;
+                return;
+            }
         } else {
             continue;
         }
     };
 
     // process data
+    no_timeout = true;
     await processData(rawData);
     
 };

@@ -56,165 +56,174 @@
                         </div>
                     </div>
                 </div>
-                <div class="card temp1">
-                    <h1 class="card-title">Socials</h1>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                            </svg>
-                            <h3 class="card-stat-text">You started playing on <span class="stat-color" id="userStartDate">---</span></h3>
+                <div class="tab rounded center-page" tab_id="FullView">
+                    <button class="tablinks" onclick="openView(event, 'FullOverview')" id="defaultOpenFullTab">Overview</button>
+                    <button class="tablinks" onclick="openView(event, 'FullSongs')">Songs</button>
+                </div>
+                <div class="tabcontent full griddata" id="FullOverview" for="FullView" display-type="grid">
+                    <div class="card temp1">
+                        <h1 class="card-title">Socials</h1>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                                </svg>
+                                <h3 class="card-stat-text">You started playing on <span class="stat-color" id="userStartDate">---</span></h3>
+                            </div>
+                            <small class="card-item-comment" id="userStartDateComment">---</small>
                         </div>
-                        <small class="card-item-comment" id="userStartDateComment">---</small>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-phone-vibrate" viewBox="0 0 16 16">
+                                    <path d="M10 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4zM6 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H6z"/>
+                                    <path d="M8 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM1.599 4.058a.5.5 0 0 1 .208.676A6.967 6.967 0 0 0 1 8c0 1.18.292 2.292.807 3.266a.5.5 0 0 1-.884.468A7.968 7.968 0 0 1 0 8c0-1.347.334-2.619.923-3.734a.5.5 0 0 1 .676-.208zm12.802 0a.5.5 0 0 1 .676.208A7.967 7.967 0 0 1 16 8a7.967 7.967 0 0 1-.923 3.734.5.5 0 0 1-.884-.468A6.967 6.967 0 0 0 15 8c0-1.18-.292-2.292-.807-3.266a.5.5 0 0 1 .208-.676zM3.057 5.534a.5.5 0 0 1 .284.648A4.986 4.986 0 0 0 3 8c0 .642.12 1.255.34 1.818a.5.5 0 1 1-.93.364A5.986 5.986 0 0 1 2 8c0-.769.145-1.505.41-2.182a.5.5 0 0 1 .647-.284zm9.886 0a.5.5 0 0 1 .648.284C13.855 6.495 14 7.231 14 8c0 .769-.145 1.505-.41 2.182a.5.5 0 0 1-.93-.364C12.88 9.255 13 8.642 13 8c0-.642-.12-1.255-.34-1.818a.5.5 0 0 1 .283-.648z"/>
+                                </svg>
+                                <h3 class="card-stat-text">You've opened Beatstar <span class="stat-color" id="appOpenedTimes">---</span> times</h3>
+                            </div>
+                            <small class="card-item-comment" id="appOpenedTimesComment">---</small>
+                        </div>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-hearts" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M11.5 1.246c.832-.855 2.913.642 0 2.566-2.913-1.924-.832-3.421 0-2.566ZM9 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h10s1 0 1-1-1-4-6-4-6 3-6 4Zm13.5-8.09c1.387-1.425 4.855 1.07 0 4.277-4.854-3.207-1.387-5.702 0-4.276ZM15 2.165c.555-.57 1.942.428 0 1.711-1.942-1.283-.555-2.281 0-1.71Z"/>
+                                </svg>
+                                <h3 class="card-stat-text">You have <span class="stat-color" id="userFriends">---</span> friends</h3>
+                            </div>
+                            <small class="card-item-comment" id="userFriendsComment">---</small>
+                        </div>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-heart-fill" viewBox="0 0 16 16">
+                                    <path d="M2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2Zm6 3.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132Z"/>
+                                </svg>
+                                <h3 class="card-stat-text">You have bragged <span class="stat-color" id="userBrags">---</span> times</h3>
+                            </div>
+                            <small class="card-item-comment" id="userBragsComment">---</small>
+                        </div>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-heart" viewBox="0 0 16 16">
+                                    <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12ZM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2Z"/>
+                                    <path d="M8 3.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132Z"/>
+                                </svg>
+                                <h3 class="card-stat-text">You have been bragged to <span class="stat-color" id="recievedBrags">---</span> times</h3>
+                            </div>
+                            <small class="card-item-comment" id="recievedBragsComment">---</small>
+                        </div>
                     </div>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-phone-vibrate" viewBox="0 0 16 16">
-                                <path d="M10 3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4zM6 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H6z"/>
-                                <path d="M8 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM1.599 4.058a.5.5 0 0 1 .208.676A6.967 6.967 0 0 0 1 8c0 1.18.292 2.292.807 3.266a.5.5 0 0 1-.884.468A7.968 7.968 0 0 1 0 8c0-1.347.334-2.619.923-3.734a.5.5 0 0 1 .676-.208zm12.802 0a.5.5 0 0 1 .676.208A7.967 7.967 0 0 1 16 8a7.967 7.967 0 0 1-.923 3.734.5.5 0 0 1-.884-.468A6.967 6.967 0 0 0 15 8c0-1.18-.292-2.292-.807-3.266a.5.5 0 0 1 .208-.676zM3.057 5.534a.5.5 0 0 1 .284.648A4.986 4.986 0 0 0 3 8c0 .642.12 1.255.34 1.818a.5.5 0 1 1-.93.364A5.986 5.986 0 0 1 2 8c0-.769.145-1.505.41-2.182a.5.5 0 0 1 .647-.284zm9.886 0a.5.5 0 0 1 .648.284C13.855 6.495 14 7.231 14 8c0 .769-.145 1.505-.41 2.182a.5.5 0 0 1-.93-.364C12.88 9.255 13 8.642 13 8c0-.642-.12-1.255-.34-1.818a.5.5 0 0 1 .283-.648z"/>
-                            </svg>
-                            <h3 class="card-stat-text">You've opened Beatstar <span class="stat-color" id="appOpenedTimes">---</span> times</h3>
+                    <div class="card temp2">
+                        <h1 class="card-title">In-App Purchases</h1>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash-stack" viewBox="0 0 16 16">
+                                    <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+                                    <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2H3z"/>
+                                </svg>
+                                <h3 class="card-stat-text">You've spent <span class="stat-color" id="iapTotal">---</span> on beatstar.</h3>
+                            </div>
+                            <small class="card-item-comment" id="iapTotalComment">---</small>
                         </div>
-                        <small class="card-item-comment" id="appOpenedTimesComment">---</small>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2" viewBox="0 0 16 16">
+                                    <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499L12.136.326zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484L5.562 3zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
+                                </svg>
+                                <h3 class="card-stat-text">Thats about <span class="stat-color" id="iapDailyAverage">---</span> for every day you've been playing.</h3>
+                            </div>
+                            <small class="card-item-comment" id="iapDailyAverageComment">---</small>
+                        </div>
+                        <h4 class="card-subtitle">Lets Take A Look At Your Last <span id="purchaseHistTotal">---</span> Purchases:</h4>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-percent" viewBox="0 0 16 16">
+                                    <path d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0zM4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                                </svg>
+                                <h3 class="card-stat-text">These purchases make up <span class="stat-color" id="percentOfTotal">---</span> of your total spend.</h3>
+                            </div>
+                            <small class="card-item-comment" id="percentOfTotalComment">---</small>
+                        </div>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag-check" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
+                                </svg>
+                                <h3 class="card-stat-text">Your favorite product is the <span class="stat-color" id="faveProduct">---</span></h3>
+                            </div>
+                            <small class="card-item-comment" id="faveProductComment">---</small>
+                        </div>
+                        <div id="pchart"></div>
+                        <div id="frame"></div>
                     </div>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-hearts" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M11.5 1.246c.832-.855 2.913.642 0 2.566-2.913-1.924-.832-3.421 0-2.566ZM9 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h10s1 0 1-1-1-4-6-4-6 3-6 4Zm13.5-8.09c1.387-1.425 4.855 1.07 0 4.277-4.854-3.207-1.387-5.702 0-4.276ZM15 2.165c.555-.57 1.942.428 0 1.711-1.942-1.283-.555-2.281 0-1.71Z"/>
-                            </svg>
-                            <h3 class="card-stat-text">You have <span class="stat-color" id="userFriends">---</span> friends</h3>
+                    <div class="card temp3">
+                        <h1 class="card-title">Gameplay</h1>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-collection-play" viewBox="0 0 16 16">
+                                    <path d="M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1zm2.765 5.576A.5.5 0 0 0 6 7v5a.5.5 0 0 0 .765.424l4-2.5a.5.5 0 0 0 0-.848l-4-2.5z"/>
+                                    <path d="M1.5 14.5A1.5 1.5 0 0 1 0 13V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 16 6v7a1.5 1.5 0 0 1-1.5 1.5h-13zm13-1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-13A.5.5 0 0 0 1 6v7a.5.5 0 0 0 .5.5h13z"/>
+                                </svg>
+                                <h3 class="card-stat-text">You have <span class="stat-color" id="songsUnlocked">---</span> songs unlocked.</h3>
+                            </div>
+                            <small class="card-item-comment" id="songsUnlockedComment">---</small>
                         </div>
-                        <small class="card-item-comment" id="userFriendsComment">---</small>
+                        <div class="card-stat">
+                            <div class="stat">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-music-note-list" viewBox="0 0 16 16">
+                                    <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2z"/>
+                                    <path fill-rule="evenodd" d="M12 3v10h-1V3h1z"/>
+                                    <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1V2.82z"/>
+                                    <path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
+                                </svg>
+                                <h3 class="card-stat-text">Your most played songs are <span class="stat-color" id="mostPlayed1">---</span> and <span class="stat-color" id="mostPlayed2">---</span>.</h3>
+                            </div>
+                            <small class="card-item-comment" id="mostPlayedCommand">---</small>
+                        </div>
+                        <h4 class="card-subtitle">Lets Take A Look At Your Averages:</h4>
+                         <!-- Average Tabs -->
+                        <div class="tab" tab_id="Averages">
+                            <button class="tablinks" onclick="openView(event, 'Averages')" id="defaultOpenAvr">Averages</button>
+                            <button class="tablinks" onclick="openView(event, 'TruAvr')">TruAvr™</button>
+                        </div>
+                        
+                        <!-- Tab content -->
+                        <div id="Averages" class="tabcontent" for="Averages">
+                            <p>Your averages, as they are in game.</p>
+                            <div class="averages-grid">
+                                <div class="Normal" id="AverageNormal">---</div>
+                                <div class="Hard" id="AverageHard">---</div>
+                                <div class="Extreme" id="AverageExtreme">---</div>
+                                <div class="Deluxe" id="AverageDeluxeNormal">---</div>
+                                <div class="Deluxe" id="AverageDeluxeHard">---</div>
+                                <div class="Deluxe" id="AverageDeluxeExtreme">---</div>
+                            </div>
+                        </div>
+                        
+                        <div id="TruAvr" class="tabcontent" for="Averages">
+                            <p>Your true averages, based off every play you have ever done.</p>
+                            <div class="averages-grid">
+                                <div class="Normal" id="TruAverageNormal">---</div>
+                                <div class="Hard" id="TruAverageHard">---</div>
+                                <div class="Extreme" id="TruAverageExtreme">---</div>
+                                <div class="Deluxe" id="TruAverageDeluxeNormal">---</div>
+                                <div class="Deluxe" id="TruAverageDeluxeHard">---</div>
+                                <div class="Deluxe" id="TruAverageDeluxeExtreme">---</div>
+                            </div>
+                        </div>
+                        <h4 class="card-subtitle">And your medal collection:</h4>
+                        <div id="mpie"></div>
                     </div>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-heart-fill" viewBox="0 0 16 16">
-                                <path d="M2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2Zm6 3.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132Z"/>
-                            </svg>
-                            <h3 class="card-stat-text">You have bragged <span class="stat-color" id="userBrags">---</span> times</h3>
-                        </div>
-                        <small class="card-item-comment" id="userBragsComment">---</small>
-                    </div>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-heart" viewBox="0 0 16 16">
-                                <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12ZM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2Z"/>
-                                <path d="M8 3.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132Z"/>
-                            </svg>
-                            <h3 class="card-stat-text">You have been bragged to <span class="stat-color" id="recievedBrags">---</span> times</h3>
-                        </div>
-                        <small class="card-item-comment" id="recievedBragsComment">---</small>
+                    <div class="card temp4">
+                        <h1 class="stat-color">BDPE Is in Open Beta!</h1>
+                        <p class="description">This means that there may be bugs, and some features may not work as intended. If you find any bugs, please report them to me on Discord (@foxboinick)</p>
+                        <p class="description">If you have any suggestions, please also let me know!</p>
+                        <p class="description">More features, and data displays are planned, so stay tuned!</p>
+                        <p class="description">If you want to support me, you can do so by <a href="https://www.buymeacoffee.com/beatbot">donating</a>.</p>
                     </div>
                 </div>
-                <div class="card temp2">
-                    <h1 class="card-title">In-App Purchases</h1>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash-stack" viewBox="0 0 16 16">
-                                <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-                                <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2H3z"/>
-                            </svg>
-                            <h3 class="card-stat-text">You've spent <span class="stat-color" id="iapTotal">---</span> on beatstar.</h3>
-                        </div>
-                        <small class="card-item-comment" id="iapTotalComment">---</small>
-                    </div>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet2" viewBox="0 0 16 16">
-                                <path d="M12.136.326A1.5 1.5 0 0 1 14 1.78V3h.5A1.5 1.5 0 0 1 16 4.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 13.5v-9a1.5 1.5 0 0 1 1.432-1.499L12.136.326zM5.562 3H13V1.78a.5.5 0 0 0-.621-.484L5.562 3zM1.5 4a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h13a.5.5 0 0 0 .5-.5v-9a.5.5 0 0 0-.5-.5h-13z"/>
-                            </svg>
-                            <h3 class="card-stat-text">Thats about <span class="stat-color" id="iapDailyAverage">---</span> for every day you've been playing.</h3>
-                        </div>
-                        <small class="card-item-comment" id="iapDailyAverageComment">---</small>
-                    </div>
-                    <h4 class="card-subtitle">Lets Take A Look At Your Last <span id="purchaseHistTotal">---</span> Purchases:</h4>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-percent" viewBox="0 0 16 16">
-                                <path d="M13.442 2.558a.625.625 0 0 1 0 .884l-10 10a.625.625 0 1 1-.884-.884l10-10a.625.625 0 0 1 .884 0zM4.5 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm7 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-                            </svg>
-                            <h3 class="card-stat-text">These purchases make up <span class="stat-color" id="percentOfTotal">---</span> of your total spend.</h3>
-                        </div>
-                        <small class="card-item-comment" id="percentOfTotalComment">---</small>
-                    </div>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag-check" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                                <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
-                            </svg>
-                            <h3 class="card-stat-text">Your favorite product is the <span class="stat-color" id="faveProduct">---</span></h3>
-                        </div>
-                        <small class="card-item-comment" id="faveProductComment">---</small>
-                    </div>
-                    <div id="pchart"></div>
-                    <div id="frame"></div>
-                </div>
-                <div class="card temp3">
-                    <h1 class="card-title">Gameplay</h1>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-collection-play" viewBox="0 0 16 16">
-                                <path d="M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1zm2.765 5.576A.5.5 0 0 0 6 7v5a.5.5 0 0 0 .765.424l4-2.5a.5.5 0 0 0 0-.848l-4-2.5z"/>
-                                <path d="M1.5 14.5A1.5 1.5 0 0 1 0 13V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 16 6v7a1.5 1.5 0 0 1-1.5 1.5h-13zm13-1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-13A.5.5 0 0 0 1 6v7a.5.5 0 0 0 .5.5h13z"/>
-                            </svg>
-                            <h3 class="card-stat-text">You have <span class="stat-color" id="songsUnlocked">---</span> songs unlocked.</h3>
-                        </div>
-                        <small class="card-item-comment" id="songsUnlockedComment">---</small>
-                    </div>
-                    <div class="card-stat">
-                        <div class="stat">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-music-note-list" viewBox="0 0 16 16">
-                                <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2z"/>
-                                <path fill-rule="evenodd" d="M12 3v10h-1V3h1z"/>
-                                <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1V2.82z"/>
-                                <path fill-rule="evenodd" d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5z"/>
-                            </svg>
-                            <h3 class="card-stat-text">Your most played songs are <span class="stat-color" id="mostPlayed1">---</span> and <span class="stat-color" id="mostPlayed2">---</span>.</h3>
-                        </div>
-                        <small class="card-item-comment" id="mostPlayedCommand">---</small>
-                    </div>
-                    <h4 class="card-subtitle">Lets Take A Look At Your Averages:</h4>
-                     <!-- Average Tabs -->
-                    <div class="tab">
-                        <button class="tablinks" onclick="openAvr(event, 'Averages')" id="defaultOpenAvr">Averages</button>
-                        <button class="tablinks" onclick="openAvr(event, 'TruAvr')">TruAvr™</button>
-                    </div>
-                    
-                    <!-- Tab content -->
-                    <div id="Averages" class="tabcontent">
-                        <p>Your averages, as they are in game.</p>
-                        <div class="averages-grid">
-                            <div class="Normal" id="AverageNormal">---</div>
-                            <div class="Hard" id="AverageHard">---</div>
-                            <div class="Extreme" id="AverageExtreme">---</div>
-                            <div class="Deluxe" id="AverageDeluxeNormal">---</div>
-                            <div class="Deluxe" id="AverageDeluxeHard">---</div>
-                            <div class="Deluxe" id="AverageDeluxeExtreme">---</div>
-                        </div>
-                    </div>
-                    
-                    <div id="TruAvr" class="tabcontent">
-                        <p>Your true averages, based off every play you have ever done.</p>
-                        <div class="averages-grid">
-                            <div class="Normal" id="TruAverageNormal">---</div>
-                            <div class="Hard" id="TruAverageHard">---</div>
-                            <div class="Extreme" id="TruAverageExtreme">---</div>
-                            <div class="Deluxe" id="TruAverageDeluxeNormal">---</div>
-                            <div class="Deluxe" id="TruAverageDeluxeHard">---</div>
-                            <div class="Deluxe" id="TruAverageDeluxeExtreme">---</div>
-                        </div>
-                    </div>
-                    <h4 class="card-subtitle">And your medal collection:</h4>
-                    <div id="mpie"></div>
-                </div>
-                <div class="card temp4">
-                    <h1 class="stat-color">BDPE Is in Open Beta!</h1>
-                    <p class="description">This means that there may be bugs, and some features may not work as intended. If you find any bugs, please report them to me on Discord (@foxboinick)</p>
-                    <p class="description">If you have any suggestions, please also let me know!</p>
-                    <p class="description">More features, and data displays are planned, so stay tuned!</p>
-                    <p class="description">If you want to support me, you can do so by <a href="https://www.buymeacoffee.com/beatbot">donating</a>.</p>
+                <div class="tabcontent full griddata" id="FullSongs" for="FullView" display-type="grid">
+                    <p class="owo-whats-this">Soon™</p>
                 </div>
             </div>
         </div>
@@ -323,6 +332,7 @@ Kindly provide me with a data package containing this information.</pre>
     <script>
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpenAvr").click();
+        document.getElementById("defaultOpenFullTab").click();
         </script>
 </footer>
 </html>

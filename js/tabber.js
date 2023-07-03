@@ -1,21 +1,49 @@
-function openAvr(evt, avrName) {
+
+  function openView(evt, viewName) {
+    // from event target get tab_id from parent div if class tab in parent div
+    parentDiv = evt.target.parentElement;
+    if (parentDiv.classList.contains("tab")) {
+      //<div class="tab" tab_id="FullView">
+      tab_id = parentDiv.getAttribute("tab_id");
+    }
+
     // Declare all variables
     var i, tabcontent, tablinks;
   
     // Get all elements with class="tabcontent" and hide them
     tabcontent = document.getElementsByClassName("tabcontent");
+    // filter tabcontent by tab_id in for= attribute
+    tabcontent = Array.prototype.filter.call(tabcontent, function(tabcontent) {
+      return tabcontent.getAttribute("for") == tab_id;
+    });
+    console.log(tabcontent);
+
     for (i = 0; i < tabcontent.length; i++) {
       tabcontent[i].style.display = "none";
     }
   
     // Get all elements with class="tablinks" and remove the class "active"
     tablinks = document.getElementsByClassName("tablinks");
+    // filter tablinks by tab_id in parent div tab_id attribute
+    tablinks = Array.prototype.filter.call(tablinks, function(tablinks) {
+      return tablinks.parentElement.getAttribute("tab_id") == tab_id;
+    });
+    console.log(tablinks);
     for (i = 0; i < tablinks.length; i++) {
       tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
   
     // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(avrName).style.display = "block";
+    // get elements by that match id=viewName and for=tab_id
+    tabcontent = document.getElementsByClassName("tabcontent");
+    tabcontent = Array.prototype.filter.call(tabcontent, function(tabcontent) {
+      return tabcontent.getAttribute("for") == tab_id && tabcontent.id == viewName;
+    });
+    console.log(tabcontent);
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = tabcontent[i].getAttribute("display-type") || "block";  
+    }
+
     evt.currentTarget.className += " active";
   } 
 
