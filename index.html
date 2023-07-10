@@ -59,6 +59,7 @@
                 <div class="tab rounded center-page" tab_id="FullView">
                     <button class="tablinks" onclick="openView(event, 'FullOverview')" id="defaultOpenFullTab">Overview</button>
                     <button class="tablinks" onclick="openView(event, 'FullSongs')">Songs</button>
+                    <button class="tablinks" onclick="openView(event, 'FullPaymentHistory')">More?</button>
                 </div>
                 <div class="tabcontent full griddata" id="FullOverview" for="FullView" display-type="grid">
                     <div class="card temp1">
@@ -214,15 +215,69 @@
                         <h4 class="card-subtitle">And your medal collection:</h4>
                         <div id="mpie"></div>
                     </div>
-                    <div class="card temp4">
-                        <h1 class="stat-color">BDPE Is in Open Beta!</h1>
-                        <p class="description">This means that there may be bugs, and some features may not work as intended. If you find any bugs, please report them to me on Discord (@foxboinick)</p>
-                        <p class="description">If you have any suggestions, please also let me know!</p>
-                        <p class="description">More features, and data displays are planned, so stay tuned!</p>
-                        <p class="description">If you want to support me, you can do so by <a href="https://www.buymeacoffee.com/beatbot">donating</a>.</p>
-                    </div>
                 </div>
                 <div class="tabcontent full griddata" id="FullSongs" for="FullView" display-type="grid">
+                    <div class="card songsearch">
+                        <div class="song-searchbar">
+                            <!-- [LEFT] SEARCHBAR [LEFT] [RIGHT] FILTER, ORDER [RIGHT]-->
+                            <div class="searchbar">
+                                <div class="input-container">
+                                    <icon>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                        </svg>
+                                    </icon>
+                                    <input type="text" id="songsearch" class="searchbar-input">
+                                </div>
+                            </div>
+                            <div class="filterbar">
+                                <!-- 
+                                    <div class="custom-select" style="width:200px;">
+                                        <select>
+                                            <option value="Filter" li-color="rgba(0,0,0,0.3)">All Songs</option>
+                                            <option value="Normal" li-color="#00ff00">Normal</option>
+                                            <option value="Hard" li-color="#ff0000">Hard</option>
+                                            <option value="Extreme" li-color="#0000ff">Extreme</option>
+                                        </select>
+                                    </div>
+                                    <a href="#" class="filterbar-button" id="filterbar-button">Filter</a>
+                                -->
+                                <div class="filterbar-button noselect">
+                                    <icon>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+                                            <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/>
+                                          </svg>
+                                    </icon>
+                                    <p class="noselect">Filter</p>
+                                </div>
+                                <a href="#" class="filterbar-order" id="filterbar-order">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-up" viewBox="0 0 16 16">
+                                        <path d="M3.5 12.5a.5.5 0 0 1-1 0V3.707L1.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L3.5 3.707V12.5zm3.5-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="search-results" id="song-search-results">
+                            <div class="search-item">
+                                <div class="song-image">
+                                    <img src="./img/profiles/15.jpg" alt="Song Image">
+                                </div>
+                                <div class="song-info">
+                                    <p class="song-name">Song Name</p>
+                                    <p class="song-author">Song Author</p>
+                                </div>
+                                <div class="song-score">
+                                    <div class="song-stars"></div>
+                                    <p class="song-medal"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card songdisplay">
+                        <p class="owo-whats-this">Soon™</p>
+                    </div>
+                </div>
+                <div class="tabcontent full griddata" id="FullPaymentHistory" for="FullView" display-type="grid">
                     <p class="owo-whats-this">Soon™</p>
                 </div>
             </div>
@@ -230,7 +285,7 @@
         <div class="container" id="app-input">
             <input type="file" id="upload" accept=".zip" style="display: none;">
                 <div class="app-input">
-                    <p class="description"><a href="https://github.com/FoxBoiNick/BDPE">BDPE</a> is a tool to explore the contents of your Beatstar data package. It is your device that is doing all the work, so no data is sent to any server!</p>
+                    <p class="description"><a href="https://github.com/FoxBoiNick/BDPE">BDPE</a> is a tool to explore the contents of your Beatstar data package. It is your device that is doing all the work, so no data is sent to any server!<br>If you want to support me, you can do so by <a href="https://www.buymeacoffee.com/beatbot">donating</a>.</p>
                     <p class="step1-button-container" draggable="false" id="HelpModalActivator">
                         <a class="step1 noselect" draggable="false">
                             <small class="tag noselect">1</small>
@@ -239,6 +294,13 @@
                             (click here for help)
                         </a>
                     </p>
+                    <div class="beta-warning" id="BetaWarn">
+                        <x onclick="this.parentElement.style.display='none'; window.localStorage.setItem('betaWarn', 'true');">X</x>
+                        <h1>Open Beta</h1>
+                        <p>BDPE is currently in open beta. This means that there may be bugs and missing features.
+                            <br>If you find any bugs or have any suggestions, please join the <a href="https://discord.gg/jAbuWshfG3">Discord server</a> and report them.
+                            <br>If you want to support me, you can do so by <a href="https://www.buymeacoffee.com/beatbot">donating</a>.</p>
+                    </div>
                     <div class="step2-button-container" draggable="false" id="upload-file">
                         <label for="upload" class="step2" draggable="false">
                             <small class="tag noselect">2</small>
@@ -333,6 +395,21 @@ Kindly provide me with a data package containing this information.</pre>
         // Get the element with id="defaultOpen" and click on it
         document.getElementById("defaultOpenAvr").click();
         document.getElementById("defaultOpenFullTab").click();
-        </script>
+
+        // if betaWarn is True in localStorage, set the checkbox to none
+        if (localStorage.getItem("betaWarn") == "true") {
+            document.getElementById("BetaWarn").style.display = "none";
+            // increment the betaWarnCount
+            localStorage.setItem("betaWarnCount", parseInt(localStorage.getItem("betaWarnCount")) + 1);
+            // if NaN set to 0
+            if (isNaN(parseInt(localStorage.getItem("betaWarnCount")))) {
+                localStorage.setItem("betaWarnCount", 1);
+            }
+            if (parseInt(localStorage.getItem("betaWarnCount")) >= 5) {
+                localStorage.setItem("betaWarn", "false");
+                localStorage.setItem("betaWarnCount", 0);
+            }
+        }
+    </script>
 </footer>
 </html>

@@ -300,6 +300,10 @@ async function processData(rawData) {
         }
 
         var Object = {
+            Name: songData[song.templateId].Name || "Unknown",
+            Artist: songData[song.templateId].Artist || "---",
+            Difficulty: songData[song.templateId].Difficulty || "Normal",
+            AlbumCover: `https://beatscore.eu/image/cover/${songData[song.templateId].CoverId}` || undefined,
             Score: {
                 HighestScore : {
                     Normalized : song.HighestScore.normalizedScore,
@@ -1114,6 +1118,67 @@ async function updateDisplay(DisplayData) {
 
     setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 100);
     setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 500);
+
+    // Song Search Filter System
+    async function getSearch(songs, q) {
+        // get search results
+        let searchResults = songs.filter(function(song) {
+            return song.Name.toLowerCase().includes(q);
+        }
+        ).map(function(song) {
+            if (song.Name.startsWith("[Deluxe]")) {
+                song.Name = song.Name.slice(8);
+                song.Deluxe = true;
+            }
+
+            // calculate stars
+            
+
+            return `<div class="noselect search-item ${song.Deluxe ? "deluxe" : ""}">
+            <div class="song-image noselect">
+                <img src="${song.AlbumCover}" alt="Song Image">
+                ${
+                    song.Difficulty != "Normal" ? `<div class="song-difficulty-icon"><img src="./img/difficulty/${song.Difficulty}.png" alt=" "></div>` : ""
+                }
+            </div>
+            <div class="song-info noselect">
+                <p class="song-name noselect">${song.Name}</p>
+                <p class="song-author noselect">${song.Artist}</p>
+            </div>
+            <div class="song-score noselect">
+                <div class="song-stars noselect">${`<img src="./img/star.webp" height="15px" width="15px"></img>`.repeat(song.Stars)}</div>
+                <p class="song-medal noselect"></p>
+            </div>
+        </div>`;
+        }
+        ).join("");
+        // return search results
+        return searchResults;
+    }
+
+
+
+    // get search bar
+    var searchBar = document.getElementById("songsearch");
+    // attach event listener
+    searchBar.addEventListener("keyup", async function() {
+        // make sure user has stopped typing
+        clearTimeout(typingTimer);
+        var typingTimer = setTimeout(async function() {
+            // get search query
+            var q = searchBar.value.toLowerCase();
+            // update search
+            let searchResults = await getSearch(DisplayData.User.Profile.Songs.AvailableSongs, q);
+            // update search results
+            document.getElementById("song-search-results").innerHTML = searchResults;
+        }, 500);
+    });
+
+    // trigger event
+    searchBar.dispatchEvent(new Event("keyup"));
+
+    
+
 };
 
 
