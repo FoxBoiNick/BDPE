@@ -1208,7 +1208,7 @@ async function handleFile(evt=null) {
         if (no_timeout) return;
         uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file, please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
         return;
-    }, 5000);
+    }, 10000);
 
     // get file object
     if (evt != null) {
