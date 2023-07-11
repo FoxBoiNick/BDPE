@@ -228,7 +228,7 @@ async function processData(rawData) {
 
         Response.SongCases = {
             History : profile.recordBoxOpening.previouslyOpenedGachaBoxesId.map(function(x) { return {GachaBoxId: x}}),
-            Next: profile.recordBoxOpening.nextGachaBox.boxId
+            Next: profile.recordBoxOpening.nextGachaBox ? profile.recordBoxOpening.nextGachaBox.boxId : 0
         }
 
         Response.ApplicationData = {
