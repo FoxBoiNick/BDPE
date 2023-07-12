@@ -44,11 +44,14 @@
 
     <!-- google fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- favicon -->
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+
 </head>
 <body>
     <header class="header">
         <div class="icon noselect">
-            <img src="img/logo.jpg" alt="icon" draggable="false">
+            <img src="img/logo.jpg" alt="icon" draggable="false" id="site-logo">
         </div>
         <h1 class="title noselect">Beatstar Data Package Explorer (OPEN BETA)</h1>
     </header>

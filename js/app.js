@@ -1,3 +1,6 @@
+var Processlog = [
+];
+
 var songData = {};
 var products = {
     // Common Products
@@ -106,10 +109,28 @@ var products = {
 
 async function processData(rawData) {
 
+    Processlog.push("Fetching Song Data");
+    let getSongData =
+    new Promise(function(resolve, reject)
+    {
+        fetch(`/data/songs.json`)
+        .then(function(response){
+            return response.json();
+        })
+        .then((json) => {
+            resolve(json);
+        }).catch(function(err){
+            reject(err);
+        })
+    })
+
+    songData = await getSongData;
+    Processlog.push("Fetched Song Data");
 
     no_timeout = false;
     setTimeout(function(){ 
         if (no_timeout) return;
+        Processlog.push("Processing Data Timed Out");
         uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file, please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
         return;
     }, 5000);
@@ -124,7 +145,7 @@ async function processData(rawData) {
 
     function GetConfig(Name)
     {
-        return rawData[Name] ? rawData[Name] : null;
+        return rawData[Name] ? rawData[Name] : null;   
     }
 
     function ParsePaymentHistory(payments)
@@ -1187,6 +1208,7 @@ var uploadFile = document.getElementById('upload-file');
 var uploadInfo = document.getElementById('upload-info');
 
 async function checkPackage(files) {
+    Processlog.push(`Checking Package Validity...`);
     let validPackage = true;
     const requiredFiles = [
         'readme.txt',
@@ -1195,127 +1217,159 @@ async function checkPackage(files) {
         'payment_history.json',
     ]
     for (const requiredFile of requiredFiles) {
-        if (!files.some((file) => file.name === requiredFile)) validPackage = false;
+        if (!files.some((file) => file.name === requiredFile)) {
+            validPackage = false;
+            Processlog.push(`Missing ${requiredFile}`);
+        }
+        else {
+            Processlog.push(`Found ${requiredFile}`);
+        }
     }
+    Processlog.push(`Package Validity: ${validPackage}`);
     return validPackage;
 };
 
 // handle file
 async function handleFile(evt=null) {
+    uploadInfo.innerHTML = "<p style='color:orange;'>Checking Package Validity...</p>";
     // add timeout for 5 seconds
     var no_timeout = false;
     setTimeout(function(){ 
         if (no_timeout) return;
-        uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file, please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
+        Processlog.push(`Timed out while handling file... (handleFile)`);
+        uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file (handleFile), please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
         return;
     }, 10000);
 
-    // get file object
-    if (evt != null) {
-        var filesz = evt.target.files || evt.dataTransfer.files;
-    } else {
-        var filesz = document.getElementById('upload').files;
-    }
-
-    let getSongData =
-    new Promise(function(resolve, reject)
-    {
-        fetch(`/data/songs.json`)
-        .then(function(response){
-            return response.json();
-        })
-        .then((json) => {
-            resolve(json);
-        }).catch(function(err){
-            reject(err);
-        })
-    })
-
-    songData = await getSongData;
-
-    file = filesz[0];
-
-    const uz = new fflate.Unzip();
-    uz.register(fflate.AsyncUnzipInflate);
-    const files = [];
-    uz.onfile = (f) => files.push(f);
-    if (!file.stream) {
-        loading = false;
-        uploadInfo.innerHTML = "<p style='color:red;'>This browser does not support streaming uploads, try using google chrome instead.</p>";
-        return;
-    }
-    const reader = file.stream().getReader();
-    while (true) {
-        const { value, done } = await reader.read();
-        if (done) {
-            uz.push(new Uint8Array(0), true);
-            break;
-        }
-        for (let i = 0; i < value.length; i += 65536) {
-            uz.push(value.subarray(i, i + 65536), false);
-        }
-    }
-    
-    // check if package is valid
-    const validPackage = await checkPackage(files);
-
-    if (!validPackage) {
-        uploadInfo.innerHTML = "<p style='color:red;'>Your package seems to be corrupted. Click or drop your package file here to retry</p>";
-        return;
-    }
-
-    uploadInfo.innerHTML = "<p style='color:green;'>Your package is valid! Loading Awesomeness...</p>";
-
-    const getFile = (name) => files.find((file) => file.name === name);
-
-    const readFile = async (name) => {
-        return new Promise((resolve) => {
-            const file = getFile(name);
-            if (!file) {
-                resolve(null);
-            }
-            const fileContents = [];
-            const decoder = new fflate.DecodeUTF8();
-            file.ondata = (err, data, final) => {
-                decoder.push(data, final);
-            }
-            decoder.ondata = (str, final) => {
-                fileContents.push(str);
-                if (final) {
-                    resolve(fileContents.join(''));
-                }
-            };
-            file.start();
-        });
-    };
-
-    // create new data object
-    var rawData = {};
-    // for each file in package
-    for (const file of files) {
-        // get file name
-        const fileName = file.name;
-        // get file data
-        const fileData = await readFile(fileName);
-        // add file data to data object
-        if (fileName.endsWith('.json')) {
-            try{
-                rawData[fileName.replace('.json', '')] = JSON.parse(fileData);
-            } catch (err) {
-                console.log(err);
-                uploadInfo.innerHTML = "<p style='color:red;'>Your package seems to be corrupted. Click or drop your package file here to retry</p>";
-                no_timeout = true;
-                return;
-            }
+    try {
+        // get file object
+        if (evt != null) {
+            var filesz = evt.target.files || evt.dataTransfer.files;
         } else {
-            continue;
+            var filesz = document.getElementById('upload').files;
         }
-    };
 
-    // process data
-    no_timeout = true;
-    await processData(rawData);
+        file = filesz[0];
     
+        const uz = new fflate.Unzip();
+        uz.register(fflate.AsyncUnzipInflate);
+        const files = [];
+        uz.onfile = (f) => files.push(f);
+        if (!file.stream) {
+            loading = false;
+            no_timeout = true;
+            Processlog.push(`browser does not support streaming uploads...</p>`);
+            uploadInfo.innerHTML = "<p style='color:red;'>This browser does not support streaming uploads, try using google chrome instead.</p>";
+            return;
+        }
+        const reader = file.stream().getReader();
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+                uz.push(new Uint8Array(0), true);
+                break;
+            }
+            for (let i = 0; i < value.length; i += 65536) {
+                uz.push(value.subarray(i, i + 65536), false);
+            }
+        }
+
+        Processlog.push(`Unpacked Zip File - ${files.length} files`);
+        
+        // check if package is valid
+        const validPackage = await checkPackage(files);
+    
+        if (!validPackage) {
+            loading = false;
+            no_timeout = true;
+            Processlog.push(`Package is not valid...`);
+            uploadInfo.innerHTML = "<p style='color:red;'>Your package seems to be corrupted. Click or drop your package file here to retry</p>";
+            return;
+        }
+    
+        // update info
+        Processlog.push(`Reading Files...`);
+        uploadInfo.innerHTML = "<p style='color:green;'>Your package is valid! Reading Files...</p>";
+    
+        const getFile = (name) => files.find((file) => file.name === name);
+    
+        const readFile = async (name) => {
+            Processlog.push(`Reading ${name}`);
+            return new Promise((resolve) => {
+                const file = getFile(name);
+                if (!file) {
+                    resolve(null);
+                }
+                const fileContents = [];
+                const decoder = new fflate.DecodeUTF8();
+                file.ondata = (err, data, final) => {
+                    decoder.push(data, final);
+                }
+                decoder.ondata = (str, final) => {
+                    fileContents.push(str);
+                    if (final) {
+                        resolve(fileContents.join(''));
+                    }
+                };
+                file.start();
+            });
+        };
+    
+        // create new data object
+        var rawData = {};
+        // for each file in package
+        for (const file of files) {
+            // get file name
+            const fileName = file.name;
+            // get file data
+            const fileData = await readFile(fileName);
+            // add file data to data object
+            if (fileName.endsWith('.json')) {
+                uploadInfo.innerHTML = `<p style='color:green;'>Your package is valid! Reading ${fileName}...</p>`;
+                try{
+                    rawData[fileName.replace('.json', '')] = JSON.parse(fileData);
+                } catch (err) {
+                    console.log(err);
+                    console.log(err.stack);
+                    loading = false;
+                    no_timeout = true;
+
+                    // get site-logo
+                    let logo = document.getElementById('site-logo');
+                    // apply onclick
+                    logo.setAttribute('onclick', `alert(\`${'Traceback:\n' + err.stack + '\n\n' + Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n')}\`); return false;`);
+
+                    Processlog.push(`${fileName} is corrupted... (${err})`);
+                    uploadInfo.innerHTML = "<p style='color:red;'>Your package seems to be corrupted. Click or drop your package file here to retry</p>";
+                    no_timeout = true;
+                    return;
+                }
+            } else {
+                Processlog.push(`Skipping Non-JSON File: ${fileName}`);
+                continue;
+            }
+        };
+
+        // update info
+        Processlog.push(`Processing Data...`);
+        uploadInfo.innerHTML = "<p style='color:green;'>Your package is valid! Processing Data...</p>";
+    
+        // process data
+        no_timeout = true;
+        await processData(rawData);
+    } catch (err) {
+        no_timeout = true;
+        loading = false;
+        console.log(err);
+        Processlog.push(`${err} (handleFile)`);
+        // get site-logo
+        let logo = document.getElementById('site-logo');
+        // apply onclick
+        logo.setAttribute('onclick', `alert(\`${'Traceback:\n' + err.stack + '\n\n' + Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n')}\`); return false;`);
+
+        uploadInfo.innerHTML = `<p style='color:red;'>${err} (handleFile), please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>`;
+        return;
+    }
 };
 
 // handle file select event
@@ -1330,6 +1384,8 @@ uploadFile.addEventListener('click', async function handleFileSelect(evt) {
 document.getElementById('upload').addEventListener('change', async function handleFileSelect(evt) {
     evt.stopPropagation();
     evt.preventDefault();
+    Processlog.push(`Opening from file dialog - ${evt.target.files.length} files`);
+    uploadInfo.innerHTML = `<p style='color:orange;'>Opening from file dialog - ${evt.target.files.length} files</p>`;
     handleFile(evt);
 }, false);
 
