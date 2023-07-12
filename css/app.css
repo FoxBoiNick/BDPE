@@ -1169,7 +1169,7 @@ and flex with flex basis on legend
     background-color: rgba(194, 153, 17, 0.3);
 }
 .song-image {
-    width: 64px;
+    min-width: 64px;
     height: 64px;
     padding: 5px;
     position: relative;
