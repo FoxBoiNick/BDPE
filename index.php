@@ -1,3 +1,19 @@
+<?php
+    session_start();
+    $User = false;
+    $Message = "<p class=\"description\">To import songs please <a href=\"https://beatscore.eu/login\">Login</a> to your BeatSCORE account.</p>";
+    if($_SERVER['SERVER_NAME'] != "localhost")
+        {
+            require("../source/global.php");
+
+            $User = IsLoggedIn();
+
+            if($User === false)
+                $Message = '<p class="description">To import songs please <a href="https://beatscore.eu/login">Login</a> to your BeatSCORE account.</p>';
+            else
+                $Message = "<p class=\"description\">Logged into BeatSCORE as {$User}</p>";
+        }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,7 +75,11 @@
                 <div class="tab rounded center-page" tab_id="FullView">
                     <button class="tablinks" onclick="openView(event, 'FullOverview')" id="defaultOpenFullTab">Overview</button>
                     <button class="tablinks" onclick="openView(event, 'FullSongs')">Songs</button>
-                    <button class="tablinks" onclick="openView(event, 'FullPaymentHistory')">More?</button>
+                    <?php if($User !== false) { ?>
+                        <button class="tablinks" onclick="openView(event, 'FullPaymentHistory')">BeatSCORE Support?</button>
+                      <?php } else { ?>
+                        <button class="tablinks" onclick="openView(event, 'FullPaymentHistory')">More?</button>
+                    <?php } ?>
                 </div>
                 <div class="tabcontent full griddata" id="FullOverview" for="FullView" display-type="grid">
                     <div class="card temp1">

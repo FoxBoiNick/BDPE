@@ -1217,6 +1217,22 @@ async function handleFile(evt=null) {
         var filesz = document.getElementById('upload').files;
     }
 
+    let getSongData =
+    new Promise(function(resolve, reject)
+    {
+        fetch(`/data/songs.json`)
+        .then(function(response){
+            return response.json();
+        })
+        .then((json) => {
+            resolve(json);
+        }).catch(function(err){
+            reject(err);
+        })
+    })
+
+    songData = await getSongData;
+
     file = filesz[0];
 
     const uz = new fflate.Unzip();
@@ -1314,23 +1330,6 @@ uploadFile.addEventListener('click', async function handleFileSelect(evt) {
 document.getElementById('upload').addEventListener('change', async function handleFileSelect(evt) {
     evt.stopPropagation();
     evt.preventDefault();
-
-    let getSongData =
-    new Promise(function(resolve, reject)
-    {
-        fetch(`/data/songs.json`)
-        .then(function(response){
-            return response.json();
-        })
-        .then((json) => {
-            resolve(json);
-        }).catch(function(err){
-            reject(err);
-        })
-    })
-
-    songData = await getSongData;
-
     handleFile(evt);
 }, false);
 
@@ -1382,22 +1381,6 @@ uploadFile.addEventListener('drop', async function handleFileDrop(evt) {
         uploadInfo.innerHTML = "<p style='color:red;'>Please select a .zip file</p>";
         return;
     }
-
-    let getSongData =
-    new Promise(function(resolve, reject)
-    {
-        fetch(`/data/songs.json`)
-        .then(function(response){
-            return response.json();
-        })
-        .then((json) => {
-            resolve(json);
-        }).catch(function(err){
-            reject(err);
-        })
-    })
-
-    songData = await getSongData;
 
     handleFile(evt);
 
