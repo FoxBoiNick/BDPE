@@ -1,5 +1,23 @@
 var Processlog = [
-];
+]; ProcessLogTotal = 0;
+var siteError = ""
+
+// get site-logo
+let logo = document.getElementById('site-logo');
+// apply onclick
+logo.onclick = function() {
+    if (siteError.length > 0) {
+        alert(`${'BDPE DEBUGGER\n\nTraceback:\n' + siteError + '\n\n' + Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n')}`); 
+    } else {
+        if (Processlog.length == 0) {
+            alert('BDPE DEBUGGER\n\nNo Debug Data to Display');
+        } else {
+            alert(`BDPE DEBUGGER\n\n${'Process Log:\n' + Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n')}`)
+        }
+    }
+    return false;
+}
+
 
 var songData = {};
 var products = {
@@ -106,10 +124,58 @@ var products = {
     }
 
 }
+var medalThresholds = {
+    "Standard": {
+        "Normal": {
+            "No Medal": 0,
+            "Gold": 48500,
+            "Platinum": 49000,
+            "Diamond": 49500,
+            "Diamond Perfect": 50000,
+        },
+        "Hard": {
+            "No Medal": 0,
+            "Gold": 72750,
+            "Platinum": 73500,
+            "Diamond": 74250,
+            "Diamond Perfect": 75000,
+        },
+        "Extreme": {
+            "No Medal": 0,
+            "Gold": 97000,
+            "Platinum": 98000,
+            "Diamond": 99000,
+            "Diamond Perfect": 100000,
+        }
+    },
+    "Deluxe": {
+        "Normal": {
+            "No Medal": 0,
+            "Gold": 48900,
+            "Platinum": 49300,
+            "Diamond": 49750,
+            "Diamond Perfect": 50000,
+        },
+        "Hard": {
+            "No Medal": 0,
+            "Gold": 73350,
+            "Platinum": 73950,
+            "Diamond": 74625,
+            "Diamond Perfect": 75000,
+        },
+        "Extreme": {
+            "No Medal": 0,
+            "Gold": 97800,
+            "Platinum": 98600,
+            "Diamond": 99500,
+            "Diamond Perfect": 100000,
+        }
+    }
+}
 
 async function processData(rawData) {
 
-    Processlog.push("Fetching Song Data");
+    Processlog.push("Fetching Song Data"); let startTime = new Date();
     let getSongData =
     new Promise(function(resolve, reject)
     {
@@ -125,7 +191,7 @@ async function processData(rawData) {
     })
 
     songData = await getSongData;
-    Processlog.push("Fetched Song Data");
+    Processlog.push("Fetched Song Data in " + (new Date() - startTime) + "ms");
 
     no_timeout = false;
     setTimeout(function(){ 
@@ -150,6 +216,8 @@ async function processData(rawData) {
 
     function ParsePaymentHistory(payments)
     {
+        Processlog.push("Parsing Payment History"); let startTime = new Date();
+        let parced = 0;
         var Map = [];
 
         payments.forEach(function(payment){
@@ -169,15 +237,19 @@ async function processData(rawData) {
                     Source: payment.purchase.trafficSource
                 };
                 Map.push(Temp);
+                parced++;
             }
 
         });
+
+        Processlog.push(`Parced ${parced} Payments in ${new Date() - startTime}ms`);
         
         return Map;
     }
 
     function ParseProfile(profile)
     {
+        Processlog.push("Parsing Profile"); let startTime = new Date();
         var Response = {};
 
 
@@ -263,7 +335,9 @@ async function processData(rawData) {
         profile.subProfileTOs.forEach(function(to){
             if(to.LastPurchaseTime)
                 Response.BasicInfo.LastPurchaseDate = new Date(to.LastPurchaseTime);
-        })           
+        })      
+        
+        Processlog.push(`Parsed Profile in ${new Date() - startTime}ms`);
 
         return Response;
     }
@@ -320,12 +394,25 @@ async function processData(rawData) {
             ViewData.RewardSources[song.RewardedSource] = 1;
         }
 
+        // get medal from medalThresholds
+        var medal = "None";
+        // iterate through medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty]
+        // key = medal, value = score required
+        for (var key in medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty]) {
+            if (song.HighestScore.absoluteScore >= medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty][key]) {
+                medal = key;
+            }
+        }
+
         var Object = {
             Name: songData[song.templateId].Name || "Unknown",
+            Type: songData[song.templateId].Type || "Unknown",
             Artist: songData[song.templateId].Artist || "---",
             Difficulty: songData[song.templateId].Difficulty || "Normal",
+            Genres: songData[song.templateId].Genres || ["Unknown"],
             AlbumCover: `https://beatscore.eu/image/cover/${songData[song.templateId].CoverId}` || undefined,
             Score: {
+                Medal: medal,
                 HighestScore : {
                     Normalized : song.HighestScore.normalizedScore,
                     Absolute : song.HighestScore.absoluteScore,
@@ -359,7 +446,6 @@ async function processData(rawData) {
         paymentHistoryJson = paymentHistoryJson.filter(function (item) {
             return item.receiptKey;
         });
-        console.log(paymentHistoryJson);
         temp = {};
         items = [];
         unreadableitems = [];
@@ -411,6 +497,8 @@ async function processData(rawData) {
 
     function CalculateSongAveragesAndMedals(profileJson) {
 
+        Processlog.push(`Calculating Song Averages and Medals...`); let startTime = new Date();
+
         let medalData = {
             "dp": 0,
             "d": 0,
@@ -430,60 +518,12 @@ async function processData(rawData) {
             "Hard": [],
             "Extreme": [],
         }
-        medalThresholds = {
-            "Standard": {
-                "Normal": {
-                    "No Medal": 0,
-                    "Gold": 48500,
-                    "Platinum": 49000,
-                    "Diamond": 49500,
-                    "Diamond Perfect": 50000,
-                },
-                "Hard": {
-                    "No Medal": 0,
-                    "Gold": 72750,
-                    "Platinum": 73500,
-                    "Diamond": 74250,
-                    "Diamond Perfect": 75000,
-                },
-                "Extreme": {
-                    "No Medal": 0,
-                    "Gold": 97000,
-                    "Platinum": 98000,
-                    "Diamond": 99000,
-                    "Diamond Perfect": 100000,
-                }
-            },
-            "Deluxe": {
-                "Normal": {
-                    "No Medal": 0,
-                    "Gold": 48900,
-                    "Platinum": 49300,
-                    "Diamond": 49750,
-                    "Diamond Perfect": 50000,
-                },
-                "Hard": {
-                    "No Medal": 0,
-                    "Gold": 73350,
-                    "Platinum": 73950,
-                    "Diamond": 74625,
-                    "Diamond Perfect": 75000,
-                },
-                "Extreme": {
-                    "No Medal": 0,
-                    "Gold": 97800,
-                    "Platinum": 98600,
-                    "Diamond": 99500,
-                    "Diamond Perfect": 100000,
-                }
-            }
-        }
 
 
         for (song of profileJson.beatmaps.beatmaps) {
             songInfo = songData[song.templateId];
             if (songInfo === undefined) {
-                console.log("Song not found in BDPE: " + song.templateId);
+                Processlog.push("Song not found in BDPE: " + song.templateId);
                 continue;
             }
             if (songInfo.Difficulty === "Normal") {
@@ -718,6 +758,8 @@ async function processData(rawData) {
         dataavrs.gameAverage.Extreme.Deluxe /= deluxeSongs.Extreme.length;
         dataavrs.TruAvr.Extreme.Deluxe /= deluxeSongs.Extreme.length;
 
+        Processlog.push("Calculated Song Averages and Medals in " + (Date.now() - startTime) + "ms")
+
         return [
             dataavrs,
             medalData,
@@ -725,22 +767,7 @@ async function processData(rawData) {
     }
 
     async function CalculateMostPlayedSongs(profileJson) {
-        // fetch ./data/songs.json using fetch no async
-        let getSongData =
-            new Promise(function(resolve, reject)
-            {
-                fetch(`/data/songs.json`)
-                .then(function(response){
-                    return response.json();
-                })
-                .then((json) => {
-                    resolve(json);
-                }).catch(function(err){
-                    reject(err);
-                })
-            })
 
-        
         let objectResponse = Promise.all([getSongData])
         .then(function(SongData){
             // gameplayOverview.mostPlayedSong.1 and 2
@@ -844,6 +871,7 @@ async function processData(rawData) {
 }
 
 async function updateDisplay(DisplayData) {
+    Processlog.push("Updating Display"); let startTime = Date.now();
     console.log(DisplayData);
     // update user preium pin
     let premiumPin = document.getElementById("TourPassPin");
@@ -1140,13 +1168,28 @@ async function updateDisplay(DisplayData) {
     setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 100);
     setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 500);
 
+    var filterJson = {};
     // Song Search Filter System
-    async function getSearch(songs, q) {
+    async function getSearch(songs, q, filter) {
         // get search results
         let searchResults = songs.filter(function(song) {
             return song.Name.toLowerCase().includes(q);
         }
-        ).map(function(song) {
+        )
+        
+        // use filter(json) to filter search results
+        for (const [key, value] of Object.entries(filter)) {
+            searchResults = searchResults.filter(function(song) {
+                // return if value array contains value in song key
+                for (item of value) {
+                    if (song[key].includes(item)) {
+                        return true;
+                    }
+                }
+            })
+        }
+    
+        return searchResults.map(function(song) {
             if (song.Name.startsWith("[Deluxe]")) {
                 song.Name = song.Name.slice(8);
                 song.Deluxe = true;
@@ -1173,11 +1216,7 @@ async function updateDisplay(DisplayData) {
         </div>`;
         }
         ).join("");
-        // return search results
-        return searchResults;
     }
-
-
 
     // get search bar
     var searchBar = document.getElementById("songsearch");
@@ -1186,18 +1225,77 @@ async function updateDisplay(DisplayData) {
         // make sure user has stopped typing
         clearTimeout(typingTimer);
         var typingTimer = setTimeout(async function() {
+            Processlog.push(`Updating Search Results...`); let startTime = Date.now();
             // get search query
             var q = searchBar.value.toLowerCase();
             // update search
-            let searchResults = await getSearch(DisplayData.User.Profile.Songs.AvailableSongs, q);
+            let searchResults = await getSearch(DisplayData.User.Profile.Songs.AvailableSongs, q, filterJson);
             // update search results
             document.getElementById("song-search-results").innerHTML = searchResults;
+            // update
+            Processlog.push(`Updated Search Results in ${Date.now() - startTime}ms`);
+
         }, 500);
     });
+
+    // get filterbar
+    var filterBar = document.getElementById("songfilterbar-dropdown");
+    var filterButton = document.getElementById("filterbutton");
+
+    // attach event listener
+    filterButton.addEventListener("click", async function() {
+        // show dropdown
+        filterBar.classList.toggle("active");
+    });
+    // if user clicks outside of dropdown
+    window.addEventListener("click", async function(event) {
+        if (!filterBar.contains(event.target) && !filterButton.contains(event.target)) {
+            // hide dropdown
+            filterBar.classList.remove("active");
+        }
+    });
+
+    // get filterbar items
+    var filterBarItems = document.getElementsByClassName("item-content-item");
+    // attach event listener
+    for (var i = 0; i < filterBarItems.length; i++) {
+        filterBarItems[i].addEventListener("click", async function() {
+            var filterBarItem = this;
+            var filterBarItemCategory = filterBarItem.parentElement.parentElement.getElementsByClassName("item-title")[0].innerHTML;
+
+            filterBarItem.classList.toggle("active");
+            filterJson = {};
+
+            for (var i = 0; i < filterBarItems.length; i++) {
+
+                var filterBarItem = filterBarItems[i];
+                var filterBarItemCategory = filterBarItem.parentElement.parentElement.getElementsByClassName("item-title")[0].innerHTML;
+                var filterBarItemValue = filterBarItem.getElementsByTagName("label")[0].innerHTML;
+                filterBarItemValue = filterBarItemValue.replace(/&amp;/g, "&");
+                var filterBarItemActive = filterBarItem.classList.contains("active");
+
+                if (filterBarItemActive) {
+                    if (!filterJson.hasOwnProperty(filterBarItemCategory)) {
+                        filterJson[filterBarItemCategory] = [];
+                    }
+                    if (!filterJson[filterBarItemCategory].includes(filterBarItemValue)) {
+                        filterJson[filterBarItemCategory].push(filterBarItemValue);
+                    }
+                }
+            }
+
+            // update filterbar button
+            let query = searchBar.value.toLowerCase();
+            let searchResults = await getSearch(DisplayData.User.Profile.Songs.AvailableSongs, query, filterJson);
+            document.getElementById("song-search-results").innerHTML = searchResults;
+        });
+    }
 
     // trigger event
     searchBar.dispatchEvent(new Event("keyup"));
 
+    Processlog.push(`Updated diplay in ${Date.now() - startTime}ms`);
+    Processlog.push(`Finished in ${Date.now() - ProcessLogTotal}ms`);
     
 
 };
@@ -1330,15 +1428,10 @@ async function handleFile(evt=null) {
                     rawData[fileName.replace('.json', '')] = JSON.parse(fileData);
                 } catch (err) {
                     console.log(err);
-                    console.log(err.stack);
                     loading = false;
                     no_timeout = true;
 
-                    // get site-logo
-                    let logo = document.getElementById('site-logo');
-                    // apply onclick
-                    logo.setAttribute('onclick', `alert(\`${'Traceback:\n' + err.stack + '\n\n' + Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n')}\`); return false;`);
-
+                    siteError = err.stack;
                     Processlog.push(`${fileName} is corrupted... (${err})`);
                     uploadInfo.innerHTML = "<p style='color:red;'>Your package seems to be corrupted. Click or drop your package file here to retry</p>";
                     no_timeout = true;
@@ -1362,11 +1455,7 @@ async function handleFile(evt=null) {
         loading = false;
         console.log(err);
         Processlog.push(`${err} (handleFile)`);
-        // get site-logo
-        let logo = document.getElementById('site-logo');
-        // apply onclick
-        logo.setAttribute('onclick', `alert(\`${'Traceback:\n' + err.stack + '\n\n' + Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n')}\`); return false;`);
-
+        siteError = err.stack;
         uploadInfo.innerHTML = `<p style='color:red;'>${err} (handleFile), please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>`;
         return;
     }
@@ -1384,6 +1473,7 @@ uploadFile.addEventListener('click', async function handleFileSelect(evt) {
 document.getElementById('upload').addEventListener('change', async function handleFileSelect(evt) {
     evt.stopPropagation();
     evt.preventDefault();
+    ProcessLogTotal = new Date();
     Processlog.push(`Opening from file dialog - ${evt.target.files.length} files`);
     uploadInfo.innerHTML = `<p style='color:orange;'>Opening from file dialog - ${evt.target.files.length} files</p>`;
     handleFile(evt);

@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css?family=Mulish:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Space Grotesk:wght@400;700&display=swap');
+
 :root {
     --bdpe-bg: radial-gradient(circle at 50% 0%, #292929, #0F0F0F 100%);
     --bdpe-bg-darker: #0000007C;
@@ -27,6 +30,8 @@ body {
     margin: 0;
 
     overflow-y: auto;
+    font-family: 'Mulish', sans-serif;
+    font-weight: 400;
 }
 
 .noselect {
@@ -55,7 +60,7 @@ body {
 }
 .header .title {
     color: #fff;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0 5px;
     line-height: 50px;
@@ -98,7 +103,7 @@ body {
 }
 .footer p {
     color: #fff;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0 10px;
     line-height: 50px;
@@ -107,7 +112,7 @@ body {
 }
 .footer a {
     color: #b63838;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0;
     line-height: 50px;
@@ -118,7 +123,7 @@ body {
 }
 .demo {
     color: #b63838;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0;
     line-height: 50px;
@@ -137,7 +142,7 @@ body {
     color: white;
     text-decoration: none;
 
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
 }
 .demo-link p {
     margin: 0;
@@ -225,7 +230,7 @@ body {
 
 .container .description {
     color: #fff;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0 10px;
     line-height: 1.15;
@@ -233,7 +238,7 @@ body {
 }
 .container .description a {
     color: #b63838;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0;
     line-height: 1.15;
@@ -272,7 +277,7 @@ body {
     border-radius: 5px;
 
     color: #fff;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0 10px;
     line-height: 1.15;
@@ -304,7 +309,7 @@ body {
     transform: rotate(-5deg);
 
     color: #fff;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 900;
     font-size: 1.5em;
     margin: 0;
@@ -345,7 +350,7 @@ body {
     border: 2px dashed rgba(255, 78, 78, 0.5);
 
     color: #fff;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0 10px;
     line-height: 1.15;
@@ -361,7 +366,7 @@ body {
 }
 .step2-button-container .step2 span p {
     color: #fff;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0;
     line-height: 1.15;
@@ -394,7 +399,7 @@ body {
     transform: rotate(-5deg);
 
     color: #fff;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 900;
     font-size: 1.5em;
     margin: 0;
@@ -444,6 +449,7 @@ body {
 .card-stat h3 {
     margin: auto 0;
     width: 90%;
+    font-weight: 500;
 }
 .card-stat svg {
     height: 20px !important;
@@ -462,10 +468,32 @@ body {
 .card.user {
     padding: 0;
 }
+#userName {
+    font-family: sans-serif;
+}
+.card-subtitle {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 500;
+}
 
 
 
 @media (min-width: 750px) {
+    .filterbar-dropdown {
+        position: absolute;
+        top: 110%;
+        left: 0;
+        width: 400%;
+        background-image: var(--bdpe-bg);
+        border: 2px rgba(143, 143, 143, 0.3) solid;
+        border-radius: 5px;
+        padding: 15px;
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        z-index: 100;
+    }
+
     .tabcontent.griddata {
         grid-template-columns: repeat(11, 1fr);
     }
@@ -499,6 +527,22 @@ body {
     }
 }
 @media (max-width: 950px) and (min-width: 750px) {
+
+    .filterbar-dropdown {
+        position: absolute;
+        top: 110%;
+        left: 0;
+        width: 400%;
+        background-image: var(--bdpe-bg);
+        border: 2px rgba(143, 143, 143, 0.3) solid;
+        border-radius: 5px;
+        padding: 15px;
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        z-index: 100;
+    }
+
     .tabcontent.griddata {
         grid-template-columns: repeat(11, 1fr);
     }
@@ -538,6 +582,8 @@ body {
 
     /* contain text within card nicely */
     word-break: break-all;
+    font-family: "Mulish", sans-serif;
+    font-weight: 100;
 }
 .card.user {
     display: flex;
@@ -548,6 +594,8 @@ body {
 .card-title {
     width: 100%;
     text-align: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 300;
 }
 .banner-shade {
     display: flex;
@@ -648,7 +696,7 @@ body {
     margin: 0;
     padding: 0;
     color: #fff;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 900;
     font-size: 15px;
     margin: 0;
@@ -690,6 +738,10 @@ body {
 }
   
   /* Style the buttons that are used to open the tab content */
+.tablinks {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 300;
+}
 .tab button {
     background-color: inherit;
     float: left;
@@ -767,7 +819,7 @@ body {
     padding: 3px;
     margin: 0;
     
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 900;
 
     margin-bottom: 10px;
@@ -835,7 +887,7 @@ body {
 .modal-body {
     padding: 2px 16px;
     color: white;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
 }
 .modal-warn {
     background-color: rgba(240, 110, 4, 0.3);
@@ -861,7 +913,7 @@ body {
     background-color: rgba(255, 78, 78, 0.1);
     color: white;
     border: none;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 900;
     text-align: left;
     padding: 5px 10px;
@@ -887,7 +939,7 @@ body {
     background-color: rgba(255, 78, 78, 0.3);
     color: white;
     border: none;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 900;
     text-align: left;
     padding: 5px 10px;
@@ -927,7 +979,7 @@ and flex with flex basis on legend
     text-align: center;
     justify-content: center;
     align-items: center;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 900;
     font-size: 1.1vmin;
 }
@@ -965,7 +1017,7 @@ and flex with flex basis on legend
     justify-content: center;
     grid-column: 1 / 12;
 
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 900;
     font-size: 10vmin;
     color: rgba(255, 78, 78, 0.5);
@@ -995,7 +1047,7 @@ and flex with flex basis on legend
     bottom: 10%
 }
 .beta-warning h1 {
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 900;
     font-size: 1.5rem;
     color: rgba(255, 78, 78, 1);
@@ -1004,8 +1056,8 @@ and flex with flex basis on legend
     padding-bottom: 15px;
 }
 .beta-warning p {
-    font-family: "Roboto", sans-serif;
-    font-weight: 900;
+    font-family: "Mulish", sans-serif;
+    font-weight: 100;
     font-size: 0.9rem;
     color: rgba(255, 255, 255, 1);
     text-align: left;
@@ -1072,7 +1124,7 @@ and flex with flex basis on legend
     border: none;
     background-color: rgba(0,0,0,0);
     color: white;
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 300;
     padding: 5px 0px;
     font-size: 1rem;
@@ -1132,6 +1184,7 @@ and flex with flex basis on legend
     flex-direction: row;
     align-items: center;
     cursor: pointer;
+    position: relative;
 }
 .filterbar-button icon {
     color: white;
@@ -1140,7 +1193,7 @@ and flex with flex basis on legend
     width: 16px;
 }
 .filterbar-button p {
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 300;
     font-size: 1rem;
     color: white;
@@ -1203,7 +1256,7 @@ and flex with flex basis on legend
     position: relative;
 }
 .song-name {
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 600;
     font-size: 1rem;
     color: white;
@@ -1211,7 +1264,7 @@ and flex with flex basis on legend
     padding: 0;
 }
 .song-author {
-    font-family: "Roboto", sans-serif;
+    font-family: "Mulish", sans-serif;
     font-weight: 300;
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.5);
@@ -1229,4 +1282,110 @@ img:before {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat; 
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.donate-href {
+    /* animated gradient text */
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    background-size: 600% 600%;
+    -webkit-animation: gradient 10s ease infinite;
+    -moz-animation: gradient 10s ease infinite;
+    animation: gradient 10s ease infinite;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-decoration: none;
+    font-family: "Mulish", sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    color: white;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0.8;
+}
+.donate-href:hover {
+    opacity: 1;
+}
+
+.filterbutton {
+    display: flex;
+    flex-direction: row;
+}
+
+.filterbar-dropdown-item {
+    /*! padding: 5px; */
+    display: flex;
+    flex-direction: column;
+}
+.filterbar-dropdown-item .item-title {
+    font-family: "Mulish", sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: white;
+    margin: 0;
+    padding: 3px;
+}
+.filterbar-dropdown-item .item-content {
+    display: flex;
+    /* max three per row, aligned center */
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+.item-content-item label {
+    font-family: "Space Grotesk", sans-serif;
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px 16px;
+    transition: 0.3s;
+    color: inherit;
+    border: 2px solid rgba(var(--selected-color), 0.4);
+    background-color: rgba(22, 22, 22, 0.3);
+    border-radius: 25px;
+    transition: all 0.5s fade-in-out;
+}
+.item-content-item label:hover {
+    background-color: rgba(var(--selected-color, 255, 255, 255), 0.5);
+    border: 2px solid rgba(var(--selected-color, 255, 255, 255), 0.5);
+}
+.item-content-item.active label {
+    background-color: rgba(var(--selected-color, 255, 255, 255), 0.8);
+    border: 2px solid rgba(var(--selected-color, 255, 255, 255), 0.9);
+}
+
+@media (max-width: 750px) {
+    .filterbar-dropdown {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-image: var(--bdpe-bg);
+        border: 2px rgba(143, 143, 143, 0.3) solid;
+        border-radius: 5px;
+        padding: 15px 0px;
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        z-index: 100;
+    }
+}
+.filterbar-dropdown.active {
+    display: flex;
 }

@@ -42,8 +42,6 @@
 
     <link rel="stylesheet" href="css/app.css">
 
-    <!-- google fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <!-- favicon -->
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
 
@@ -266,12 +264,68 @@
                                     <a href="#" class="filterbar-button" id="filterbar-button">Filter</a>
                                 -->
                                 <div class="filterbar-button noselect">
-                                    <icon>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
-                                            <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/>
-                                          </svg>
-                                    </icon>
-                                    <p class="noselect">Filter</p>
+                                    <div class="filterbutton" id="filterbutton">
+                                        <icon>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+                                                <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2h-11z"/>
+                                            </svg>
+                                        </icon>
+                                        <p class="noselect">Filter</p>
+                                    </div>
+                                    <div class="filterbar-dropdown" id="songfilterbar-dropdown">
+                                        <p class="noselect">Apply Filters</p>
+                                        <div class="filterbar-dropdown-item">
+                                            <p class="noselect item-title">Type</p>
+                                            <div class="item-content">
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 51, 98, 104;">Standard</label>
+                                                </div>
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 233, 112, 26;">Deluxe</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filterbar-dropdown-item">
+                                            <p class="noselect item-title">Difficulty</p>
+                                            <div class="item-content">
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 51, 98, 104;">Normal</label>
+                                                </div>
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 239, 126, 21;">Hard</label>
+                                                </div>
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 218, 17, 37;">Extreme</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="filterbar-dropdown-item">
+                                            <p class="noselect item-title">Genres</p>
+                                            <div class="item-content">
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 36, 98, 209;">Hip-Hop</label>
+                                                </div>
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 200, 63, 117">Pop</label>
+                                                </div>
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 1, 154, 195">R&B</label>
+                                                </div>
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 196, 40, 41">Rock</label>
+                                                </div>
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 138, 53, 200">Dance</label>
+                                                </div>
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 217, 98, 42">Alternative</label>
+                                                </div>
+                                                <div class="item-content-item">
+                                                    <label style="--selected-color: 133, 83, 50">Country</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <a href="#" class="filterbar-order" id="filterbar-order">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sort-up" viewBox="0 0 16 16">
@@ -283,11 +337,11 @@
                         <div class="search-results" id="song-search-results">
                             <div class="search-item">
                                 <div class="song-image">
-                                    <img src="./img/profiles/15.jpg" alt="Song Image">
+                                    <img src="./img/logo.jpg" alt="Song Image">
                                 </div>
                                 <div class="song-info">
-                                    <p class="song-name">Song Name</p>
-                                    <p class="song-author">Song Author</p>
+                                    <p class="song-name">Loading...</p>
+                                    <p class="song-author">Loading...</p>
                                 </div>
                                 <div class="song-score">
                                     <div class="song-stars"></div>
@@ -308,7 +362,7 @@
         <div class="container" id="app-input">
             <input type="file" id="upload" accept=".zip" style="display: none;">
                 <div class="app-input">
-                    <p class="description"><a href="https://github.com/FoxBoiNick/BDPE">BDPE</a> is a tool to explore the contents of your Beatstar data package. It is your device that is doing all the work, so no data is sent to any server!<br>If you want to support me, you can do so by <a href="https://www.buymeacoffee.com/beatbot">donating</a>.</p>
+                    <p class="description"><a href="https://github.com/FoxBoiNick/BDPE">BDPE</a> is a tool to explore the contents of your Beatstar data package. It is your device that is doing all the work, so no data is sent to any server!<br>If you want to support me, you can do so by <a class="donate-href" href="https://www.buymeacoffee.com/beatbot">donating</a>.</p>
                     <p class="step1-button-container" draggable="false" id="HelpModalActivator">
                         <a class="step1 noselect" draggable="false">
                             <small class="tag noselect">1</small>
@@ -322,7 +376,7 @@
                         <h1>Open Beta</h1>
                         <p>BDPE is currently in open beta. This means that there may be bugs and missing features.
                             <br>If you find any bugs or have any suggestions, please join the <a href="https://discord.gg/jAbuWshfG3">Discord server</a> and report them.
-                            <br>If you want to support me, you can do so by <a href="https://www.buymeacoffee.com/beatbot">donating</a>.</p>
+                            <br>If you want to support me, you can do so by <a class="donate-href" href="https://www.buymeacoffee.com/beatbot">donating</a>.</p>
                     </div>
                     <div class="step2-button-container" draggable="false" id="upload-file">
                         <label for="upload" class="step2" draggable="false">
