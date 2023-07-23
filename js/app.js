@@ -7,16 +7,44 @@ let logo = document.getElementById('site-logo');
 // apply onclick
 logo.onclick = function() {
     if (siteError.length > 0) {
-        alert(`${'BDPE DEBUGGER\n\nTraceback:\n' + siteError + '\n\n' + Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n')}`); 
+        document.getElementById('debugModal').style.display = 'block';
+        document.getElementById('debugModalText').innerHTML = `${`
+            <h2>Traceback:</h2>
+            <div class="modal-error">
+                <p>Something went wrong, please try again or contact me on <a href="https://discord.gg/jAbuWshfG3" onclick="window.open(this.href); return false;">discord</a>. (@foxboinick)</p>
+                <pre>` 
+                    + siteError + 
+                `</pre>
+            </div>
+            <h2>Debug Chain:</h2>
+            <pre style="max-height: 256px; overflow-y: auto;"><code>`+ Processlog.map((x, i) => `${i + 1}. ${x}`).join('<br><br>')}</code></pre>
+            <br>
+            <textarea id="rawData" style="height: 0px; opacity: 0;">TRACEBACK:\n\n${siteError}\nDEBUG CHAIN:\n\n${Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n\n')}</textarea>
+            <button id="copyDebugMessageButton" class="debugger-copy-button" onclick="document.getElementById('rawData').select(); document.execCommand('copy'); this.innerHTML = 'Copied!'; setTimeout(function(){document.getElementById('copyDebugMessageButton').innerHTML = 'Copy Debug Data';}, 3000);">Copy Debug Data</button>
+        `;
     } else {
         if (Processlog.length == 0) {
-            alert('BDPE DEBUGGER\n\nNo Debug Data to Display');
+            document.getElementById('debugModal').style.display = 'block';
+            document.getElementById('debugModalText').innerHTML = '<br><h2>No Debug Data to Display</h2><br>';
         } else {
-            alert(`BDPE DEBUGGER\n\n${'Process Log:\n' + Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n')}`)
+            document.getElementById('debugModal').style.display = 'block';
+            document.getElementById('debugModalText').innerHTML = `${`
+            <h2>Debug Chain:</h2>
+            <pre style="max-height: 256px; overflow-y: auto;"><code>`+ Processlog.map((x, i) => `${i + 1}. ${x}`).join('<br><br>')}</code></pre>
+            <br>
+            <textarea id="rawData" style="height: 0px; opacity: 0;">DEBUG CHAIN:\n\n${Processlog.map((x, i) => `${i + 1}. ${x}`).join('\n\n')}</textarea>
+            <button id="copyDebugMessageButton" class="debugger-copy-button" onclick="document.getElementById('rawData').select(); document.execCommand('copy'); this.innerHTML = 'Copied!'; setTimeout(function(){document.getElementById('copyDebugMessageButton').innerHTML = 'Copy Debug Data';}, 3000);">Copy Debug Data</button>
+        `;
         }
     }
     return false;
 }
+var closeBtn = document.getElementById("DebugModalCloser");
+closeBtn.onclick = function() {document.getElementById('debugModal').style.display = 'none';};
+window.onclick = function(event) {
+    if (event.target == document.getElementById('debugModal')) {document.getElementById('debugModal').style.display = 'none';};
+    if (event.target == document.getElementById('helpModal')) {document.getElementById('helpModal').style.display = "none";};
+};
 
 
 var songData = {};
@@ -172,6 +200,30 @@ var medalThresholds = {
         }
     }
 }
+var starThresholds = {
+    "Normal": {
+        "1": 0,
+        "2": 0.2,
+        "3": 0.35,
+        "4": 0.7,
+        "5": 0.95,
+    },
+    "Hard": {
+        "1": 0,
+        "2": 0.2,
+        "3": 0.5,
+        "4": 0.8,
+        "5": 0.95,
+    },
+    "Extreme": {
+        "1": 0,
+        "2": 0.2,
+        "3": 0.5,
+        "4": 0.8,
+        "5": 0.95,
+    }
+}
+
 
 async function processData(rawData) {
 
@@ -404,6 +456,16 @@ async function processData(rawData) {
             }
         }
 
+        var stars = 0;
+        // iterate through starThresholds[songData[song.templateId].Difficulty]
+        // key = star, value = score required
+        for (var key in starThresholds[songData[song.templateId].Difficulty]) {
+            if (song.HighestScore.normalizedScore >= starThresholds[songData[song.templateId].Difficulty][key]) {
+                // to int
+                stars = parseInt(key);
+            }
+        }
+
         var Object = {
             Name: songData[song.templateId].Name || "Unknown",
             Type: songData[song.templateId].Type || "Unknown",
@@ -413,6 +475,7 @@ async function processData(rawData) {
             AlbumCover: `https://beatscore.eu/image/cover/${songData[song.templateId].CoverId}` || undefined,
             Score: {
                 Medal: medal,
+                Stars: stars,
                 HighestScore : {
                     Normalized : song.HighestScore.normalizedScore,
                     Absolute : song.HighestScore.absoluteScore,
@@ -1188,15 +1251,45 @@ async function updateDisplay(DisplayData) {
                 }
             })
         }
-    
-        return searchResults.map(function(song) {
+
+        // get filterbar-order
+        var filterBarOrder = document.getElementById("filterbar-order");
+        // check if filterbar has active class
+        var active = filterBarOrder.classList.contains("active");
+
+        // if active sort lowest to highest score (ascending) else sort highest to lowest score (descending)
+        if (active) {
+            searchResults.sort(function(a, b) {
+                return b.Score.HighestScore.Normalized - a.Score.HighestScore.Normalized;
+            }
+            );
+        } else {
+            searchResults.sort(function(a, b) {
+                return a.Score.HighestScore.Normalized - b.Score.HighestScore.Normalized;
+            }
+            );
+        }
+        
+        if (searchResults.length == 0) {
+            return [`<div class="noselect search-item">
+            <div class="song-image noselect">
+                <img src="./img/logo.jpg" alt="Song Image">
+            </div>
+            <div class="song-info noselect">
+                <p class="song-name noselect">No Results Found</p>
+                <p class="song-author noselect">Try a different search query or filter</p>
+            </div>
+            <div class="song-score noselect">
+            </div>
+        </div>`, searchResults.length];
+        }
+        return [searchResults.map(function(song) {
             if (song.Name.startsWith("[Deluxe]")) {
                 song.Name = song.Name.slice(8);
                 song.Deluxe = true;
             }
-
-            // calculate stars
             
+            console.log(song.Score.Stars);
 
             return `<div class="noselect search-item ${song.Deluxe ? "deluxe" : ""}">
             <div class="song-image noselect">
@@ -1210,12 +1303,12 @@ async function updateDisplay(DisplayData) {
                 <p class="song-author noselect">${song.Artist}</p>
             </div>
             <div class="song-score noselect">
-                <div class="song-stars noselect">${`<img src="./img/star.webp" height="15px" width="15px"></img>`.repeat(song.Stars)}</div>
-                <p class="song-medal noselect"></p>
+                <div class="song-stars noselect">${`<img src="./img/star.webp" height="15px" width="15px"></img>`.repeat(song.Score.Stars)}${`<img src="./img/starnt.webp" height="15px" width="15px"></img>`.repeat(5 - song.Score.Stars)}</div>
+                <p class="song-medal noselect">${song.Score.Medal != "No Medal" ? `<img src="./img/medals/${song.Type.toLowerCase()}/${song.Score.Medal.toLowerCase().replace(" ", "_")}.webp" height="25px" width="25px"></img>` : ""}</p>
             </div>
         </div>`;
         }
-        ).join("");
+        ).join(""), searchResults.length];
     }
 
     // get search bar
@@ -1225,15 +1318,15 @@ async function updateDisplay(DisplayData) {
         // make sure user has stopped typing
         clearTimeout(typingTimer);
         var typingTimer = setTimeout(async function() {
-            Processlog.push(`Updating Search Results...`); let startTime = Date.now();
+            Processlog.push(`Updating Search Results...\nquery: ${q}\nfilter: ${JSON.stringify(filterJson, null, 2)}\nsorting: ${document.getElementById("filterbar-order").classList.contains("active") ? "ascending" : "descending"}`); let startTime = Date.now();
             // get search query
             var q = searchBar.value.toLowerCase();
             // update search
             let searchResults = await getSearch(DisplayData.User.Profile.Songs.AvailableSongs, q, filterJson);
             // update search results
-            document.getElementById("song-search-results").innerHTML = searchResults;
+            document.getElementById("song-search-results").innerHTML = searchResults[0];
             // update
-            Processlog.push(`Updated Search Results in ${Date.now() - startTime}ms`);
+            Processlog.push(`Updated Search Results in ${Date.now() - startTime}ms with ${searchResults[1]} results`);
 
         }, 500);
     });
@@ -1287,9 +1380,23 @@ async function updateDisplay(DisplayData) {
             // update filterbar button
             let query = searchBar.value.toLowerCase();
             let searchResults = await getSearch(DisplayData.User.Profile.Songs.AvailableSongs, query, filterJson);
-            document.getElementById("song-search-results").innerHTML = searchResults;
+            document.getElementById("song-search-results").innerHTML = searchResults[0];
         });
     }
+
+    // get filterbar-order
+    var filterBarOrder = document.getElementById("filterbar-order");
+    // attach event listener
+    filterBarOrder.addEventListener("click", async function() {
+        // toggle active
+        filterBarOrder.classList.toggle("active");
+        // get search query
+        var q = searchBar.value.toLowerCase();
+        // update search
+        let searchResults = await getSearch(DisplayData.User.Profile.Songs.AvailableSongs, q, filterJson);
+        // update search results
+        document.getElementById("song-search-results").innerHTML = searchResults[0];
+    });
 
     // trigger event
     searchBar.dispatchEvent(new Event("keyup"));
@@ -1336,6 +1443,9 @@ async function handleFile(evt=null) {
         if (no_timeout) return;
         Processlog.push(`Timed out while handling file... (handleFile)`);
         uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file (handleFile), please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
+        // simclick
+        let logo = document.getElementById('site-logo');
+        logo.click();
         return;
     }, 10000);
 
@@ -1457,6 +1567,9 @@ async function handleFile(evt=null) {
         Processlog.push(`${err} (handleFile)`);
         siteError = err.stack;
         uploadInfo.innerHTML = `<p style='color:red;'>${err} (handleFile), please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>`;
+        // simclick
+        let logo = document.getElementById('site-logo');
+        logo.click();
         return;
     }
 };

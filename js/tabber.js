@@ -51,7 +51,6 @@ var openBtn = document.getElementById("HelpModalActivator");
 var closeBtn = document.getElementById("HelpModalCloser");
 openBtn.onclick = function() {helpModal.style.display = "block";};
 closeBtn.onclick = function() {helpModal.style.display = "none";};
-window.onclick = function(event) {if (event.target == helpModal) {helpModal.style.display = "none";}}; 
 
 // get copyRequestMessage
 var copyRequestMessage = document.getElementById("copyRequestMessageButton");

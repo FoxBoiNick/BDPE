@@ -459,8 +459,24 @@ Kindly provide me with a data package containing this information.</pre>
 
                         <hr>
                     </div>
-              
+                </div>
             </div>
+            <div id="debugModal" class="modal">
+
+                <!-- Debug Modal -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span id="DebugModalCloser" class="close">&times;</span>
+                        <h2>BDPE Debug/Error Menu</h2>
+                    </div>
+                    <div class="modal-body" id="debugModalText">
+                        
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 <footer>
     <script src="js/tabber.js"></script>

@@ -888,6 +888,7 @@ body {
     padding: 2px 16px;
     color: white;
     font-family: "Mulish", sans-serif;
+    position: relative;
 }
 .modal-warn {
     background-color: rgba(240, 110, 4, 0.3);
@@ -899,6 +900,17 @@ body {
     width: calc(100% - 36px);
     height: fit-content;
 }
+.modal-error {
+    background-color: rgba(255, 78, 78, 0.3);
+    border: 2px solid rgba(255, 78, 78, 0.5);
+    color: white;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    width: calc(100% - 36px);
+    height: fit-content;
+}
+
 .modal-body pre {
     background-color: rgba(0, 0, 0, 0.3);
     color: white;
@@ -1172,6 +1184,10 @@ and flex with flex basis on legend
     height: 20px;
     width: 20px;
     color: white;
+    transform: scaleY(-1)
+}
+.filterbar-order.active svg {
+    transform: scaleY(1)
 }
 
 .filterbar-button {
@@ -1254,6 +1270,7 @@ and flex with flex basis on legend
 .song-info {
     max-width: calc(100% - 84px);
     position: relative;
+    width: 55%;
 }
 .song-name {
     font-family: "Mulish", sans-serif;
@@ -1262,6 +1279,20 @@ and flex with flex basis on legend
     color: white;
     margin: 0;
     padding: 0;
+
+}
+.song-score {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    width: fit-content;
+    justify-content: right;
+}
+.song-stars {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 .song-author {
     font-family: "Mulish", sans-serif;
@@ -1388,4 +1419,29 @@ img:before {
 }
 .filterbar-dropdown.active {
     display: flex;
+}
+
+@media (max-width: 450px) {
+    .song-stars {
+        display: none;
+    }
+}
+
+.debugger-copy-button {
+    /* absolute top right */
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(233, 73, 73, 0.3);
+    border: none;
+    border-radius: 15px;
+    padding: 5px;
+    cursor: pointer;
+    color: white;
+}
+.debugger-copy-button:hover {
+    background-color: rgba(233, 73, 73, 0.5);
+}
+.debugger-copy-button:focus {
+    background-color: rgba(233, 73, 73, 0.5);
 }
