@@ -110,7 +110,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-hearts" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M11.5 1.246c.832-.855 2.913.642 0 2.566-2.913-1.924-.832-3.421 0-2.566ZM9 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h10s1 0 1-1-1-4-6-4-6 3-6 4Zm13.5-8.09c1.387-1.425 4.855 1.07 0 4.277-4.854-3.207-1.387-5.702 0-4.276ZM15 2.165c.555-.57 1.942.428 0 1.711-1.942-1.283-.555-2.281 0-1.71Z"/>
                                 </svg>
-                                <h3 class="card-stat-text">You have <span class="stat-color" id="userFriends">---</span> friends</h3>
+                                <h3 class="card-stat-text">You've <span class="stat-color" id="userFriends">---</span> friends</h3>
                             </div>
                             <small class="card-item-comment" id="userFriendsComment">---</small>
                         </div>
@@ -119,7 +119,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square-heart-fill" viewBox="0 0 16 16">
                                     <path d="M2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2Zm6 3.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132Z"/>
                                 </svg>
-                                <h3 class="card-stat-text">You have bragged <span class="stat-color" id="userBrags">---</span> times</h3>
+                                <h3 class="card-stat-text">You've bragged <span class="stat-color" id="userBrags">---</span> times</h3>
                             </div>
                             <small class="card-item-comment" id="userBragsComment">---</small>
                         </div>
@@ -129,7 +129,7 @@
                                     <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12ZM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2Z"/>
                                     <path d="M8 3.993c1.664-1.711 5.825 1.283 0 5.132-5.825-3.85-1.664-6.843 0-5.132Z"/>
                                 </svg>
-                                <h3 class="card-stat-text">You have been bragged to <span class="stat-color" id="recievedBrags">---</span> times</h3>
+                                <h3 class="card-stat-text">You've been bragged to <span class="stat-color" id="recievedBrags">---</span> times</h3>
                             </div>
                             <small class="card-item-comment" id="recievedBragsComment">---</small>
                         </div>
@@ -142,7 +142,7 @@
                                     <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
                                     <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2H3z"/>
                                 </svg>
-                                <h3 class="card-stat-text">You've spent <span class="stat-color" id="iapTotal">---</span> on beatstar.</h3>
+                                <h3 class="card-stat-text">You've spent <span class="stat-color" id="iapTotal">---</span> on Beatstar.</h3>
                             </div>
                             <small class="card-item-comment" id="iapTotalComment">---</small>
                         </div>
@@ -186,7 +186,7 @@
                                     <path d="M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1zm2.765 5.576A.5.5 0 0 0 6 7v5a.5.5 0 0 0 .765.424l4-2.5a.5.5 0 0 0 0-.848l-4-2.5z"/>
                                     <path d="M1.5 14.5A1.5 1.5 0 0 1 0 13V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 16 6v7a1.5 1.5 0 0 1-1.5 1.5h-13zm13-1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-13A.5.5 0 0 0 1 6v7a.5.5 0 0 0 .5.5h13z"/>
                                 </svg>
-                                <h3 class="card-stat-text">You have <span class="stat-color" id="songsUnlocked">---</span> songs unlocked.</h3>
+                                <h3 class="card-stat-text">You've <span class="stat-color" id="songsUnlocked">---</span> songs unlocked.</h3>
                             </div>
                             <small class="card-item-comment" id="songsUnlockedComment">---</small>
                         </div>
@@ -223,7 +223,7 @@
                         </div>
                         
                         <div id="TruAvr" class="tabcontent" for="Averages">
-                            <p>Your true averages, based off every play you have ever done.</p>
+                            <p>Your true averages, based off every play you've ever done.</p>
                             <div class="averages-grid">
                                 <div class="Normal" id="TruAverageNormal">---</div>
                                 <div class="Hard" id="TruAverageHard">---</div>
@@ -445,8 +445,8 @@ Kindly provide me with a data package containing this information.</pre>
                             <li class="noselect">Your Journey Rank</li>
                             <li class="noselect">Your current amount of Gems</li>
                             <li class="noselect">Your current amount of Stars</li>
-                            <li class="noselect">The most recent Event you have played</li>
-                            <li class="noselect">The most recent Song you have played</li>
+                            <li class="noselect">The most recent Event you've played</li>
+                            <li class="noselect">The most recent Song you've played</li>
                             <li class="noselect">The most recent Song you unlocked</li>
                             <li class="noselect">Your current unlocked Song count</li>
                             <li class="noselect">A few friends on your friends list</li>
@@ -455,7 +455,7 @@ Kindly provide me with a data package containing this information.</pre>
                         <hr>
                         
                         <h2 class="noselect">Step 4: Wait for the Data Package</h2>
-                        <p class="noselect">Once you have provided the necessary information, Beatstar support will process your request. They will send the data package to you ASAP, usually within 1-3 business days.</p>
+                        <p class="noselect">Once you've provided the necessary information, Beatstar support will process your request. They will send the data package to you ASAP, usually within 1-3 business days.</p>
 
                         <hr>
                     </div>
