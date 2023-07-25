@@ -46,8 +46,7 @@ window.onclick = function(event) {
     if (event.target == document.getElementById('helpModal')) {document.getElementById('helpModal').style.display = "none";};
 };
 
-
-var songData = {};
+var songData = {}
 var products = {
     // Common Products
     "bundle-tourpass[0-9]+-premium": {
@@ -228,21 +227,6 @@ var starThresholds = {
 async function processData(rawData) {
 
     Processlog.push("Fetching Song Data"); let startTime = new Date();
-    let getSongData =
-    new Promise(function(resolve, reject)
-    {
-        fetch(`/data/songs.json`)
-        .then(function(response){
-            return response.json();
-        })
-        .then((json) => {
-            resolve(json);
-        }).catch(function(err){
-            reject(err);
-        })
-    })
-
-    songData = await getSongData;
     Processlog.push("Fetched Song Data in " + (new Date() - startTime) + "ms");
 
     no_timeout = false;
@@ -831,7 +815,7 @@ async function processData(rawData) {
 
     async function CalculateMostPlayedSongs(profileJson) {
 
-        let objectResponse = Promise.all([getSongData])
+        let objectResponse = Promise.all([songData])
         .then(function(SongData){
             // gameplayOverview.mostPlayedSong.1 and 2
             let mostPlayedSongs = [];
@@ -1436,6 +1420,9 @@ async function checkPackage(files) {
 
 // handle file
 async function handleFile(evt=null) {
+    // get /api/songs.php
+    songData = await fetch("/api/songs.php").then((res) => res.json());
+
     uploadInfo.innerHTML = "<p style='color:orange;'>Checking Package Validity...</p>";
     // add timeout for 5 seconds
     var no_timeout = false;
@@ -1654,23 +1641,10 @@ dempPackage.addEventListener('click', async function handleDemoPackage(evt) {
 
     uploadInfo.innerHTML = "<p style='color:green;'>Loading Awesomeness...</p>";
 
+    // get /api/songs.php
+    songData = await fetch("/api/songs.php").then((res) => res.json());
     // process data
     let demo = await fetch('data/demo.json').then((res) => res.json());
-    let getSongData =
-            new Promise(function(resolve, reject)
-            {
-                fetch(`/data/songs.json`)
-                .then(function(response){
-                    return response.json();
-                })
-                .then((json) => {
-                    resolve(json);
-                }).catch(function(err){
-                    reject(err);
-                })
-            })
-
-    songData = await getSongData;
     await updateDisplay(demo);
 }, false);
 

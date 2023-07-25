@@ -484,25 +484,6 @@ Kindly provide me with a data package containing this information.</pre>
     <script src="https://cdn.jsdelivr.net/npm/frappe-charts@1.6.1/dist/frappe-charts.min.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/frappe-charts@1.2.4/dist/frappe-charts.min.iife.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fflate@0.8.0/umd/index.js"></script>
-    <script>
-        // Get the element with id="defaultOpen" and click on it
-        document.getElementById("defaultOpenAvr").click();
-        document.getElementById("defaultOpenFullTab").click();
-
-        // if betaWarn is True in localStorage, set the checkbox to none
-        if (localStorage.getItem("betaWarn") == "true") {
-            document.getElementById("BetaWarn").style.display = "none";
-            // increment the betaWarnCount
-            localStorage.setItem("betaWarnCount", parseInt(localStorage.getItem("betaWarnCount")) + 1);
-            // if NaN set to 0
-            if (isNaN(parseInt(localStorage.getItem("betaWarnCount")))) {
-                localStorage.setItem("betaWarnCount", 1);
-            }
-            if (parseInt(localStorage.getItem("betaWarnCount")) >= 5) {
-                localStorage.setItem("betaWarn", "false");
-                localStorage.setItem("betaWarnCount", 0);
-            }
-        }
-    </script>
+    <script id='selfDestruct' src="js/loader.js"></script>
 </footer>
 </html>

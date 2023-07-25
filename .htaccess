@@ -1,0 +1,7 @@
+# Do not remove this line, otherwise mod_rewrite rules will stop working
+
+RewriteBase /
+
+RewriteEngine On
+
+RewriteRule        ^api/songs/?$                api/songs.php                   [NC,L]
