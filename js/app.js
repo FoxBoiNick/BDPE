@@ -298,7 +298,7 @@ async function processData(rawData) {
 
         Response.Songs = {
             AvailableSongs : profile.beatmaps.beatmaps.map(function(x){ return ParseSongData(x)}),
-            RemovedSongs : profile.beatmaps.removedBeatmaps.map(function(x){ return ParseSongData(x)}),
+            //RemovedSongs : profile.beatmaps.removedBeatmaps.map(function(x){ return ParseSongData(x)}),
             Stats : {
                 Started: profile.beatmaps.totalStartedCount,
                 Finished: profile.beatmaps.totalPlayedCount
@@ -943,7 +943,10 @@ async function updateDisplay(DisplayData) {
     // update user start date
     let humanReadableDate = new Date(DisplayData.User.Profile.ApplicationData.Installed);
     document.getElementById("userStartDate").innerHTML = humanReadableDate.toLocaleDateString("en-US");
-    document.getElementById("userStartDateComment").innerHTML = Math.floor((Date.now() - humanReadableDate) / 31536000000) + " years ago" + " (" + humanReadableDate.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) + ")";
+
+    // (Date.now() - humanReadableDate) / 31536000000 to one decimal place e.g. 1.9 years ago (1.99 is still 1.9)
+    let yearsAgo = Math.floor((Date.now() - humanReadableDate) / 31536000000 * 10) / 10;
+    document.getElementById("userStartDateComment").innerHTML = yearsAgo + " years ago" + " (" + humanReadableDate.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true }) + ")";
     // update user name
     document.getElementById("userName").innerHTML = DisplayData.User.Profile.UserName.Formatted;
     // update user avatar
@@ -1152,8 +1155,9 @@ async function updateDisplay(DisplayData) {
     // get total song count from api GET
     // https://beatbot.beatscore.eu/api/count/songs
     // ["count"]
+    let totalSongs = 0;
     try {
-        let totalSongs = await fetch("https://beatbot.beatscore.eu/api/count/songs")
+        totalSongs = await fetch("https://beatbot.beatscore.eu/api/count/songs")
             .then(response => response.json())
             .then(data => {
                 return data["count"];
@@ -1161,12 +1165,14 @@ async function updateDisplay(DisplayData) {
     } catch (err) {
         console.log(err);
         loading = false;
-        no_timeout = true;
-
-        siteError = err.stack;
-        Processlog.push(`An error occured while fetching the total song count from the API: ${err}`);
+        Processlog.push(`An error occured while fetching the total song count from the API:\n${err}`);
         uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file (CountSongs), please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
         no_timeout = true;
+        
+        siteError = `An error occured while fetching the total song count from the API:\n${err}`;
+        let logo = document.getElementById('site-logo');
+        logo.click();
+        
         return;
     }
 
