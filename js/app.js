@@ -421,70 +421,81 @@ async function processData(rawData) {
 
     function ParseSongData(song)
     {
-        if(ViewData.RewardSources[song.RewardedSource])
-        {
-            ViewData.RewardSources[song.RewardedSource]++;
-        }
-        else
-        {
-            ViewData.RewardSources[song.RewardedSource] = 1;
-        }
+        try{
 
-        // get medal from medalThresholds
-        var medal = "None";
-        // iterate through medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty]
-        // key = medal, value = score required
-        for (var key in medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty]) {
-            if (song.HighestScore.absoluteScore >= medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty][key]) {
-                medal = key;
+            if(ViewData.RewardSources[song.RewardedSource])
+            {
+                ViewData.RewardSources[song.RewardedSource]++;
             }
-        }
-
-        var stars = 0;
-        // iterate through starThresholds[songData[song.templateId].Difficulty]
-        // key = star, value = score required
-        for (var key in starThresholds[songData[song.templateId].Difficulty]) {
-            if (song.HighestScore.normalizedScore >= starThresholds[songData[song.templateId].Difficulty][key]) {
-                // to int
-                stars = parseInt(key);
+            else
+            {
+                ViewData.RewardSources[song.RewardedSource] = 1;
             }
+    
+            // get medal from medalThresholds
+            var medal = "None";
+            // iterate through medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty]
+            // key = medal, value = score required
+            for (var key in medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty]) {
+                if (song.HighestScore.absoluteScore >= medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty][key]) {
+                    medal = key;
+                }
+            }
+    
+            var stars = 0;
+            // iterate through starThresholds[songData[song.templateId].Difficulty]
+            // key = star, value = score required
+            for (var key in starThresholds[songData[song.templateId].Difficulty]) {
+                if (song.HighestScore.normalizedScore >= starThresholds[songData[song.templateId].Difficulty][key]) {
+                    // to int
+                    stars = parseInt(key);
+                }
+            }
+    
+            var Object = {
+                Name: songData[song.templateId].Name || "Unknown",
+                Type: songData[song.templateId].Type || "Unknown",
+                Artist: songData[song.templateId].Artist || "---",
+                Difficulty: songData[song.templateId].Difficulty || "Normal",
+                Genres: songData[song.templateId].Genres || ["Unknown"],
+                AlbumCover: `https://beatscore.eu/image/cover/${songData[song.templateId].CoverId}` || undefined,
+                Score: {
+                    Medal: medal,
+                    Stars: stars,
+                    HighestScore : {
+                        Normalized : song.HighestScore.normalizedScore,
+                        Absolute : song.HighestScore.absoluteScore,
+                    },
+                    Total : {
+                        Normalized : song.NormalizedLifetimeScore,
+                        Absolute : song.AbsoluteLifetimeScore,
+                    },
+                    HighestStreak: song.HighestStreak,
+                    MaxGrade: song.HighestGradeId,
+                    MaxCheckpoint: song.HighestCheckpoint,
+                },
+                Counters : {
+                    Played : song.PlayedCount,
+                    Unfinished : song.UnfinishedPlayCount,
+                    Bragged : song.BragState.braggedToPlayers.length
+                },
+                Version: song.Version,
+                BeatmapId: song.templateId,
+                
+                PlayCount : song.PlayedCount,
+                Source: song.RewardedSource,
+            };
+    
+        return Object;
+        } catch (e) {
+            Processlog.push(`Failed to parse song ${song.templateId}\n${e}`);
+            siteError = `Failed to parse song ${song.templateId}\n${e}`
+            uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file (ParseSongData), please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
+            // simclick
+            let logo = document.getElementById('site-logo');
+            logo.click();
+            return;    
         }
-
-        var Object = {
-            Name: songData[song.templateId].Name || "Unknown",
-            Type: songData[song.templateId].Type || "Unknown",
-            Artist: songData[song.templateId].Artist || "---",
-            Difficulty: songData[song.templateId].Difficulty || "Normal",
-            Genres: songData[song.templateId].Genres || ["Unknown"],
-            AlbumCover: `https://beatscore.eu/image/cover/${songData[song.templateId].CoverId}` || undefined,
-            Score: {
-                Medal: medal,
-                Stars: stars,
-                HighestScore : {
-                    Normalized : song.HighestScore.normalizedScore,
-                    Absolute : song.HighestScore.absoluteScore,
-                },
-                Total : {
-                    Normalized : song.NormalizedLifetimeScore,
-                    Absolute : song.AbsoluteLifetimeScore,
-                },
-                HighestStreak: song.HighestStreak,
-                MaxGrade: song.HighestGradeId,
-                MaxCheckpoint: song.HighestCheckpoint,
-            },
-            Counters : {
-                Played : song.PlayedCount,
-                Unfinished : song.UnfinishedPlayCount,
-                Bragged : song.BragState.braggedToPlayers.length
-            },
-            Version: song.Version,
-            BeatmapId: song.templateId,
-            
-            PlayCount : song.PlayedCount,
-            Source: song.RewardedSource,
-        };
-
-    return Object;
 
     }
 
@@ -1141,11 +1152,23 @@ async function updateDisplay(DisplayData) {
     // get total song count from api GET
     // https://beatbot.beatscore.eu/api/count/songs
     // ["count"]
-    let totalSongs = await fetch("https://beatbot.beatscore.eu/api/count/songs")
-        .then(response => response.json())
-        .then(data => {
-            return data["count"];
-        })
+    try {
+        let totalSongs = await fetch("https://beatbot.beatscore.eu/api/count/songs")
+            .then(response => response.json())
+            .then(data => {
+                return data["count"];
+            })
+    } catch (err) {
+        console.log(err);
+        loading = false;
+        no_timeout = true;
+
+        siteError = err.stack;
+        Processlog.push(`An error occured while fetching the total song count from the API: ${err}`);
+        uploadInfo.innerHTML = "<p style='color:red;'>An error occured processing your file (CountSongs), please try again or contact me on <a href='https://discord.gg/jAbuWshfG3' onclick='window.open(this.href); return false;'>discord</a>. (@foxboinick)</p>";
+        no_timeout = true;
+        return;
+    }
 
     document.getElementById("songsUnlockedComment").innerHTML = "That's " + Math.round((DisplayData.Songs.Count / totalSongs) * 100) + "% of all songs!";
 
@@ -1450,6 +1473,8 @@ async function handleFile(evt=null) {
         uz.register(fflate.AsyncUnzipInflate);
         const files = [];
         uz.onfile = (f) => files.push(f);
+        // if file.stream is undefined
+
         if (!file.stream) {
             loading = false;
             no_timeout = true;
