@@ -291,7 +291,7 @@ async function processData(rawData) {
 
         Response.BasicInfo = {
             Banner : profile.playerVisuals.callingCard.templateId,
-            ProfileIconId: profile.basicInfo.profileIconId,
+            ProfileIconId: profile.playerVisuals.profileIconId,
             FacebookId: profile.basicInfo.facebookAppScopedId,
             FacebookImage: profile.basicInfo.saCustomImageKey,
         }
@@ -950,7 +950,15 @@ async function updateDisplay(DisplayData) {
     // update user name
     document.getElementById("userName").innerHTML = DisplayData.User.Profile.UserName.Formatted;
     // update user avatar
-    document.getElementById("userAvatar").src = "./img/profiles/" + DisplayData.User.Profile.BasicInfo.ProfileIconId + ".jpg";
+
+    let avatarData = undefined;
+    try {
+        avatarData = await fetch("/api/avatars.php").then((res) => res.json());
+    } catch (e) {
+        avatarData = undefined;
+    }
+
+    document.getElementById("userAvatar").src = "https://beatscore.eu/image/avatar/" + (avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId].AvatarId ? avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId].AvatarId : 1);
     // update user banner
     document.getElementById("userBanner").style.backgroundImage = `url(https://beatbot.beatscore.eu/assets/banner?banner=BB${DisplayData.User.Profile.BasicInfo.Banner}&user_name=_&user_avatar=https://via.placeholder.com/128x128.png&level=20&src=True`
     // update user stars
