@@ -958,7 +958,7 @@ async function updateDisplay(DisplayData) {
         avatarData = undefined;
     }
 
-    document.getElementById("userAvatar").src = "https://beatscore.eu/image/avatar/" + (avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId].AvatarId ? avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId].AvatarId : 1);
+    document.getElementById("userAvatar").src = (avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId] ? `https://beatscore.eu/image/avatar/${avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId].AvatarId}` : "/img/logo.jpg");
     // update user banner
     document.getElementById("userBanner").style.backgroundImage = `url(https://beatbot.beatscore.eu/assets/banner?banner=BB${DisplayData.User.Profile.BasicInfo.Banner}&user_name=_&user_avatar=https://via.placeholder.com/128x128.png&level=20&src=True`
     // update user stars
