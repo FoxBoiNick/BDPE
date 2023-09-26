@@ -49,7 +49,7 @@
 
 ## Credits
 
-This discord bot uses the following open source packages:
+This website uses the following open source packages:
 
 - [Frappe Charts (JS Module)](https://github.com/frappe/charts)
 - [fflate (JS Module)](https://github.com/101arrowz/fflate)
