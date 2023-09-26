@@ -365,7 +365,9 @@ async function processData(rawData) {
             LastStart: new Date(profile.sharplaData.lastSessionStartTime),
             StartedCount: profile.sharplaData.sessionCount,
             Platform: GetPlatform(profile.sharplaData.platform),
-            AppId: profile.sharplaData.appId
+            AppId: profile.sharplaData.appId,
+            ClientVersion: profile.sharplaData.clientVersion,
+            AppVersion: profile.session.appVersion
         }
 
         profile.subProfileTOs.forEach(function(to){
@@ -449,6 +451,9 @@ async function processData(rawData) {
                 if (song.HighestScore.normalizedScore >= starThresholds[songData[song.templateId].Difficulty][key]) {
                     // to int
                     stars = parseInt(key);
+                }
+                if (song.PlayedCount == 0) {
+                    stars = 0;
                 }
             }
     
@@ -923,6 +928,28 @@ async function processData(rawData) {
         //console.log(ViewData);
         // update display
         no_timeout = true;
+
+        // check data package version against current version (1.0.0) if not equal or greater than, display error
+        // example version: 28.0.3.1993
+        let UserVersion = ViewData.Output.User.Profile.ApplicationData.AppVersion.split(".");
+        let CurrentVersion = "28.1".split(".");
+        for (let i = 0; i < UserVersion.length; i++) {
+            if (parseInt(UserVersion[i]) > parseInt(CurrentVersion[i])) {
+                break;
+            } else if (parseInt(UserVersion[i]) < parseInt(CurrentVersion[i])) {
+                let namez = {
+                    "0": "Major",
+                    "1": "Minor",
+                    "2": "Patch",
+                    "3": "Build",
+                }
+                console.log(`Data package ${namez[i]} version is ${UserVersion[i]}, current version is ${CurrentVersion[i]}`);
+                console.log(`Data package version is ${ViewData.Output.User.Profile.ApplicationData.AppVersion}, current version is ${CurrentVersion.join(".")}`);
+                Processlog.push(`Data package ${namez[i]} version is ${UserVersion[i]}, current version is ${CurrentVersion[i]}`);
+                Processlog.push(`Data package version is ${ViewData.Output.User.Profile.ApplicationData.AppVersion}, current app version is ${CurrentVersion.join(".")}`);
+            }
+        }
+
         updateDisplay(ViewData.Output);
     });
     

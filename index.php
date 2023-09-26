@@ -110,7 +110,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-hearts" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M11.5 1.246c.832-.855 2.913.642 0 2.566-2.913-1.924-.832-3.421 0-2.566ZM9 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm-9 8c0 1 1 1 1 1h10s1 0 1-1-1-4-6-4-6 3-6 4Zm13.5-8.09c1.387-1.425 4.855 1.07 0 4.277-4.854-3.207-1.387-5.702 0-4.276ZM15 2.165c.555-.57 1.942.428 0 1.711-1.942-1.283-.555-2.281 0-1.71Z"/>
                                 </svg>
-                                <h3 class="card-stat-text">You've <span class="stat-color" id="userFriends">---</span> friends</h3>
+                                <h3 class="card-stat-text">You have <span class="stat-color" id="userFriends">---</span> friends</h3>
                             </div>
                             <small class="card-item-comment" id="userFriendsComment">---</small>
                         </div>
@@ -186,7 +186,7 @@
                                     <path d="M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1zm2.765 5.576A.5.5 0 0 0 6 7v5a.5.5 0 0 0 .765.424l4-2.5a.5.5 0 0 0 0-.848l-4-2.5z"/>
                                     <path d="M1.5 14.5A1.5 1.5 0 0 1 0 13V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 16 6v7a1.5 1.5 0 0 1-1.5 1.5h-13zm13-1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-13A.5.5 0 0 0 1 6v7a.5.5 0 0 0 .5.5h13z"/>
                                 </svg>
-                                <h3 class="card-stat-text">You've <span class="stat-color" id="songsUnlocked">---</span> songs unlocked.</h3>
+                                <h3 class="card-stat-text">You have <span class="stat-color" id="songsUnlocked">---</span> songs unlocked.</h3>
                             </div>
                             <small class="card-item-comment" id="songsUnlockedComment">---</small>
                         </div>
