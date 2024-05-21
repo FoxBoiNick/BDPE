@@ -53,6 +53,10 @@ var products = {
         "Name": "Tour Pass",
         "Category": "Tour Pass",
     },
+    "shop-season-pass-[0-9]+": {
+        "Name": "Tour Pass",
+        "Category": "Tour Pass",
+    },
     "bundle-tourpass-premium": {
         "Name": "Tour Pass",
         "Category": "Tour Pass",
@@ -63,6 +67,10 @@ var products = {
     },
     "shop-leaderboard-event-[0-9]+": {
         "Name": "Event Token Pack",
+        "Category": "Event Tokens",
+    },
+    "shop-totaliser-event-[0-9]+": {
+        "Name": "Event Booster Pack",
         "Category": "Event Tokens",
     },
     "currency-pack-1": {
