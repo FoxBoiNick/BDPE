@@ -343,7 +343,7 @@ async function processData(rawData) {
 
         Response.Banners = profile.callingCards.unlockedCallingCards.map(function(x){ return {BannerId: x.templateId, EliteRank : x.seasonLevel>0?x.seasonLevel:null}});
 
-        Response.Emojis = profile.emojis.unlockedEmojisId.map(function(x){ return {EmojiId: x}});
+        Response.Emojis = profile.emojis.unlockedEmojis_newId.map(function(x){ return {EmojiId: x}});
         
         Response.Brags = profile.friendBrags.Brags.map(function(x){ return ParseBragData(x)});
 
@@ -436,11 +436,19 @@ async function processData(rawData) {
     
             // get medal from medalThresholds
             var medal = "None";
+            var medalId = null;
             // iterate through medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty]
             // key = medal, value = score required
             for (var key in medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty]) {
                 if (song.HighestScore.absoluteScore >= medalThresholds[songData[song.templateId].Type][songData[song.templateId].Difficulty][key]) {
                     medal = key;
+                    switch(key)
+                    {
+                        case 'Gold': medalId = 1; break;
+                        case 'Platinum': medalId = 2; break;
+                        case 'Diamond': medalId = 3; break;
+                        case 'Diamond Perfect': medalId = 4; break;
+                    }
                 }
             }
     
@@ -458,14 +466,16 @@ async function processData(rawData) {
             }
     
             var Object = {
+                SongVersionId: songData[song.templateId].SongVersionId || 0,
                 Name: songData[song.templateId].Name || "Unknown",
                 Type: songData[song.templateId].Type || "Unknown",
                 Artist: songData[song.templateId].Artist || "---",
                 Difficulty: songData[song.templateId].Difficulty || "Normal",
                 Genres: songData[song.templateId].Genres || ["Unknown"],
-                AlbumCover: `https://beatscore.eu/image/cover/${songData[song.templateId].CoverId}` || undefined,
+                AlbumCover: `/image/cover/${songData[song.templateId].CoverId}` || undefined,
                 Score: {
                     Medal: medal,
+                    MedalId: medalId,
                     Stars: stars,
                     HighestScore : {
                         Normalized : song.HighestScore.normalizedScore,
@@ -980,12 +990,12 @@ async function updateDisplay(DisplayData) {
 
     let avatarData = undefined;
     try {
-        avatarData = await fetch("/api/avatars.php").then((res) => res.json());
+        avatarData = await fetch("/bdpe_data/api/avatars.php").then((res) => res.json());
     } catch (e) {
         avatarData = undefined;
     }
 
-    document.getElementById("userAvatar").src = (avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId] ? `https://beatscore.eu/image/avatar/${avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId].AvatarId}` : "/img/logo.jpg");
+    document.getElementById("userAvatar").src = (avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId] ? `/image/avatar/${avatarData[DisplayData.User.Profile.BasicInfo.ProfileIconId].AvatarId}` : "/bdpe_data/img/logo.jpg");
     // update user banner
     document.getElementById("userBanner").style.backgroundImage = `url(https://beatbot.beatscore.eu/assets/banner?banner=BB${DisplayData.User.Profile.BasicInfo.Banner}&user_name=_&user_avatar=https://via.placeholder.com/128x128.png&level=20&src=True`
     // update user stars
@@ -1321,7 +1331,7 @@ async function updateDisplay(DisplayData) {
         if (searchResults.length == 0) {
             return [`<div class="noselect search-item">
             <div class="song-image noselect">
-                <img src="./img/logo.jpg" alt="Song Image">
+                <img src="/bdpe_data/img/logo.jpg" alt="Song Image">
             </div>
             <div class="song-info noselect">
                 <p class="song-name noselect">No Results Found</p>
@@ -1343,7 +1353,7 @@ async function updateDisplay(DisplayData) {
             <div class="song-image noselect">
                 <img src="${song.AlbumCover}" alt="Song Image">
                 ${
-                    song.Difficulty != "Normal" ? `<div class="song-difficulty-icon"><img src="./img/difficulty/${song.Difficulty}.png" alt=" "></div>` : ""
+                    song.Difficulty != "Normal" ? `<div class="song-difficulty-icon"><img src="/bdpe_data/img/difficulty/${song.Difficulty}.png" alt=" "></div>` : ""
                 }
             </div>
             <div class="song-info noselect">
@@ -1351,8 +1361,8 @@ async function updateDisplay(DisplayData) {
                 <p class="song-author noselect">${song.Artist}</p>
             </div>
             <div class="song-score noselect">
-                <div class="song-stars noselect">${`<img src="./img/star.webp" height="15px" width="15px"></img>`.repeat(song.Score.Stars)}${`<img src="./img/starnt.webp" height="15px" width="15px"></img>`.repeat(5 - song.Score.Stars)}</div>
-                <p class="song-medal noselect">${song.Score.Medal != "No Medal" ? `<img src="./img/medals/${song.Type.toLowerCase()}/${song.Score.Medal.toLowerCase().replace(" ", "_")}.webp" height="25px" width="25px"></img>` : ""}</p>
+                <div class="song-stars noselect">${`<img src="/bdpe_data/img/star.webp" height="15px" width="15px"></img>`.repeat(song.Score.Stars)}${`<img src="/bdpe_data/img/starnt.webp" height="15px" width="15px"></img>`.repeat(5 - song.Score.Stars)}</div>
+                <p class="song-medal noselect">${song.Score.Medal != "No Medal" ? `<img src="/bdpe_data/img/medals/${song.Type.toLowerCase()}/${song.Score.Medal.toLowerCase().replace(" ", "_")}.webp" height="25px" width="25px"></img>` : ""}</p>
             </div>
         </div>`;
         }
@@ -1485,7 +1495,7 @@ async function checkPackage(files) {
 // handle file
 async function handleFile(evt=null) {
     // get /api/songs.php
-    songData = await fetch("/api/songs.php").then((res) => res.json());
+    songData = await fetch("/bdpe_data/api/songs.php").then((res) => res.json());
 
     uploadInfo.innerHTML = "<p style='color:orange;'>Checking Package Validity...</p>";
     // add timeout for 5 seconds
@@ -1626,6 +1636,29 @@ async function handleFile(evt=null) {
         return;
     }
 };
+
+$(".beatscore-link-import").on('click', function(e){
+    var Data = {
+        Songs: ViewData.ProfileMap.Profile.Songs.AvailableSongs.map(function(s){
+            return {
+                SongVersionId: s.SongVersionId,
+                MedalId: s.Score.MedalId
+            }
+        })
+    };
+
+    APICall("POST", "/api/account/usersong/bulk", Data)
+    .then(function(){
+        console.log("Scores updated");
+    }).catch(function(err){
+        console.log(err);
+    })
+})
+
+$(".beatscore-link-login").on('click', function(e){
+    $(".account-icon-btn").click();
+    $("body").scrollTop(0);
+})
 
 // handle file select event
 uploadFile.addEventListener('click', async function handleFileSelect(evt) {
