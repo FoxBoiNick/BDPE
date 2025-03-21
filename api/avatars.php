@@ -1,5 +1,5 @@
 <?php
-$file = "{$_SERVER['DOCUMENT_ROOT']}/data/avatars_1.dat"; //1 indicates beatstar. 2 is for countrystar. How/if/when you want to implement this properly and remove the hardcode is up to you.
+$file = "{$_SERVER['DOCUMENT_ROOT']}/bdpe_data/data/avatars_1.dat"; //1 indicates beatstar. 2 is for countrystar. How/if/when you want to implement this properly and remove the hardcode is up to you.
 if (file_exists($file)) {
   $data = file_get_contents($file); 
   $Response = unserialize($data);

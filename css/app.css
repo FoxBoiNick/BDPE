@@ -43,19 +43,14 @@ body {
 }
 
 .header {
-    z-index: 1000;
-    position: fixed;
     display: flex;
     flex-direction: row;
     top: 0;
     left: 0;
-
     align-items: center;
     justify-content: center;
-
-    width: 100vw;
+    width: 100%;
     height: 70px;
-
     background-color: var(--bdpe-header);
 }
 .header .title {
@@ -63,7 +58,6 @@ body {
     font-family: "Mulish", sans-serif;
     margin: 0;
     padding: 0 5px;
-    line-height: 50px;
     font-size: 4vmin;
 }
 .header .icon {
@@ -191,7 +185,7 @@ body {
 
     width: 100%;
 }
-.container {
+.container:not(.header-container) {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -206,14 +200,10 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     max-width: 750px;
-    height: 100vh;
-
-    height: calc(100vh - 60px);
+    min-height: calc(100vh - 182px);
     margin: auto;
     padding: 0 20px;
-
     background-color: var(--bdpe-bg);
 }
 .container.inactive {
@@ -1056,7 +1046,7 @@ and flex with flex basis on legend
     animation: beta-warning 1s;
     z-index: 4;
     left: 5px;
-    bottom: 10%
+    bottom: 15%;
 }
 .beta-warning h1 {
     font-family: "Mulish", sans-serif;
@@ -1309,7 +1299,7 @@ img:before {
     position: absolute;
     height: 50px;
     width: 50px;
-    background-image: url(../img/logo.jpg);
+    background-image: url(/bdpe_data/img/logo.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat; 
